@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LegalConnect | AI-Powered Legal Expertise Matching - Better Than Law Connect</title>
+    <title>LegalConnect | Legal Expertise Matching - Better Than Law Connect</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fonts -->
@@ -12,8 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Alpine.js for interactivity -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <!-- Leaflet JS for maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Chart.js for analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- jsPDF for PDF export -->
@@ -53,23 +57,21 @@
         }
 
         body {
-            background-color: var(--light-bg);
+            background-color: #FFFFFF;
             color: var(--dark-text);
             transition: var(--transition);
         }
 
-        body.dark-mode {
-            background-color: #0F172A;
-            color: #F1F5F9;
-            --primary-dark: #E2E8F0;
-            --primary-blue: #94A3B8;
-            --light-bg: #1E293B;
-            --light-text: #94A3B8;
-            --dark-text: #F1F5F9;
-            --white: #0F172A;
-            --border-light: #334155;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.3);
+        /* Map container styling */
+        #lawyerMap {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            z-index: 1;
+        }
+
+        .map-marker-popup {
+            font-family: 'Inter', sans-serif;
         }
 
         .card-hover {
@@ -163,39 +165,138 @@
         @keyframes fadeOut {
             to { opacity: 0; }
         }
+
+        /* Scrollable lawyers container */
+        .lawyers-scroll-container {
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+        }
+
+        .lawyers-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .lawyers-scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .lawyers-scroll-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .lawyers-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Light theme hero */
+        .hero-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #e9ecef 100%);
+            color: #212529;
+        }
+
+        .section-fade-in {
+            animation: sectionFadeIn 0.6s ease-out;
+        }
+
+        @keyframes sectionFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            color: #00843D;
+            font-weight: 700;
+        }
+
+        .modern-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modern-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .modern-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
     </style>
 </head>
-<body class="min-h-screen" x-data="legalConnectApp()" x-init="init()">
+<body class="min-h-screen bg-white" x-data="legalConnectApp()" x-init="init()">
     <!-- Toast Container -->
     <div id="toastContainer"></div>
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white shadow-md dark:bg-gray-800 dark:text-white transition-colors duration-300">
-        <div class="container mx-auto px-4 py-3">
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="text-2xl text-green-600 dark:text-green-400">
+                    <div class="text-2xl text-green-600 transform hover:scale-110 transition-transform">
                         <i class="fas fa-balance-scale"></i>
                     </div>
                     <div>
-                        <h1 class="font-serif text-xl font-bold">LegalConnect</h1>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Better Than Law Connect</p>
+                        <h1 class="font-serif text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">LegalConnect</h1>
+                        <p class="text-xs text-gray-500">Better Than Law Connect</p>
                     </div>
                 </div>
                 
-                <nav class="hidden md:flex space-x-6">
-                    <a href="#search" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Search</a>
-                    <a href="#dashboard" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Dashboard</a>
-                    <a href="#compare" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Compare</a>
-                    <a href="#shortlist" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Shortlist</a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#search" class="font-medium text-gray-700 hover:text-green-600 transition-colors relative group">
+                        Search
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+                    </a>
+                    <a href="#about" class="font-medium text-gray-700 hover:text-green-600 transition-colors relative group">
+                        About
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+                    </a>
+                    <a href="#compare" class="font-medium text-gray-700 hover:text-green-600 transition-colors relative group">
+                        Compare
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+                    </a>
+                    <a href="#shortlist" class="font-medium text-gray-700 hover:text-green-600 transition-colors relative group">
+                        Shortlist
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+                    </a>
                 </nav>
                 
                 <div class="flex items-center space-x-4">
-                    <button @click="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <i class="fas fa-moon" x-show="!darkMode"></i>
-                        <i class="fas fa-sun" x-show="darkMode"></i>
-                    </button>
-                    
                     <template x-if="!currentUser">
                         <button @click="showAuthModal = true" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                             Sign In
@@ -212,13 +313,13 @@
                                     <span x-text="currentUser.name.split(' ')[0]"></span>
                                     <i class="fas fa-chevron-down text-xs"></i>
                                 </button>
-                                <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 hidden group-hover:block z-50">
-                                    <a href="#dashboard" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Dashboard</a>
-                                    <a href="#profile" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50">
+                                    <a href="#dashboard" class="block px-4 py-2 hover:bg-gray-100">Dashboard</a>
+                                    <a href="#profile" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
                                     <template x-if="currentUser.role === 'admin'">
-                                        <a href="#admin" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Admin Panel</a>
+                                        <a href="#admin" class="block px-4 py-2 hover:bg-gray-100">Admin Panel</a>
                                     </template>
-                                    <button @click="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">Logout</button>
+                                    <button @click="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Logout</button>
                                 </div>
                             </div>
                         </div>
@@ -229,35 +330,39 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
-        <div class="container mx-auto px-4">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="font-serif text-4xl md:text-5xl font-bold mb-6">
-                    Legal Matching That <span class="text-green-400">Crushes</span> Law Connect
+    <section class="hero-gradient py-20 md:py-28 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-green-400 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-400 rounded-full blur-3xl"></div>
+        </div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-5xl mx-auto text-center section-fade-in">
+                <h2 class="font-serif text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight text-gray-900">
+                    Legal Matching That <span class="text-gradient">Crushes</span> Law Connect
                 </h2>
-                <p class="text-xl mb-8 text-gray-300">
-                    Instant AI-powered matching with 200+ Australian lawyers. No signup required. Completely free.
+                <p class="text-xl md:text-2xl mb-12 text-gray-700 max-w-3xl mx-auto leading-relaxed">
+                    Instant matching with 200+ Australian lawyers. No signup required. Completely free.
                 </p>
-                <div class="flex flex-wrap justify-center gap-8 mb-12">
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">200+</div>
-                        <div class="text-gray-300">Australian Lawyers</div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-12 max-w-4xl mx-auto">
+                    <div class="feature-card bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                        <div class="stat-number text-4xl md:text-5xl font-bold mb-2">200+</div>
+                        <div class="text-gray-700 text-sm md:text-base">Australian Lawyers</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">100%</div>
-                        <div class="text-gray-300">Transparent Matching</div>
+                    <div class="feature-card bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                        <div class="stat-number text-4xl md:text-5xl font-bold mb-2">100%</div>
+                        <div class="text-gray-700 text-sm md:text-base">Transparent Matching</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">24h</div>
-                        <div class="text-gray-300">Response Guarantee</div>
+                    <div class="feature-card bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                        <div class="stat-number text-4xl md:text-5xl font-bold mb-2">24h</div>
+                        <div class="text-gray-700 text-sm md:text-base">Response Guarantee</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">$0</div>
-                        <div class="text-gray-300">Free Exports</div>
+                    <div class="feature-card bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                        <div class="stat-number text-4xl md:text-5xl font-bold mb-2">$0</div>
+                        <div class="text-gray-700 text-sm md:text-base">Free Exports</div>
                     </div>
                 </div>
-                <a href="#search" class="inline-block px-8 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium text-lg transition-colors">
-                    Start Searching - No Account Needed
+                <a href="#search" class="modern-button inline-block px-10 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-lg transition-all shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/40">
+                    <span class="relative z-10">Start Searching - No Account Needed</span>
                 </a>
             </div>
         </div>
@@ -265,15 +370,64 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
+        <!-- About Section -->
+        <section id="about" class="mb-16 section-fade-in">
+            <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="font-serif text-3xl md:text-4xl font-bold mb-6 text-center">About LegalConnect</h3>
+                    <div class="prose prose-lg max-w-none">
+                        <p class="text-lg text-gray-700 mb-6">
+                            LegalConnect is Australia's premier legal matching platform, designed to connect you with the right legal practitioner for your specific needs. We've built a comprehensive database of over 200 verified Australian lawyers across multiple practice areas.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
+                                <h4 class="font-bold text-xl mb-3 flex items-center">
+                                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                    Our Mission
+                                </h4>
+                                <p class="text-gray-700">
+                                    To make finding the right legal representation simple, transparent, and accessible to everyone. No complicated signups, no hidden fees.
+                                </p>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
+                                <h4 class="font-bold text-xl mb-3 flex items-center">
+                                    <i class="fas fa-users text-blue-600 mr-2"></i>
+                                    Trusted Network
+                                </h4>
+                                <p class="text-gray-700">
+                                    Our network includes top-tier firms, mid-tier practices, and boutique specialists across all Australian states and territories.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                            <h4 class="font-bold text-xl mb-4">How It Works</h4>
+                            <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                                <li>Enter your search criteria - practice area, location, experience level, and budget</li>
+                                <li>Our matching algorithm analyzes your requirements against our lawyer database</li>
+                                <li>Review matched lawyers with transparent scoring and detailed breakdowns</li>
+                                <li>Save favorites to your shortlist and compare multiple lawyers side-by-side</li>
+                                <li>Export your results in PDF or CSV format for your records</li>
+                            </ol>
+                        </div>
+                        <div class="text-center">
+                            <a href="#search" class="inline-block px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-lg transition-colors">
+                                Start Your Search
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Search Section -->
         <section id="search" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="bg-white rounded-xl shadow-lg p-6">
                 <h3 class="font-serif text-2xl font-bold mb-6">Find Your Legal Practitioner</h3>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left Column - Search Filters -->
                     <div class="lg:col-span-1 space-y-6">
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <div class="bg-gray-50 rounded-lg p-4">
                             <h4 class="font-medium mb-4 flex items-center">
                                 <i class="fas fa-filter mr-2 text-green-600"></i>
                                 Search Filters
@@ -282,7 +436,7 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-sm font-medium mb-2">Practice Area</label>
-                                    <select x-model="searchParams.practiceArea" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                    <select x-model="searchParams.practiceArea" @change="performSearch()" class="w-full p-2 border rounded-lg bg-white">
                                         <option value="">All Practice Areas</option>
                                         <option value="family">Family Law</option>
                                         <option value="conveyancing">Conveyancing</option>
@@ -292,7 +446,7 @@
                                 
                                 <div>
                                     <label class="block text-sm font-medium mb-2">State</label>
-                                    <select x-model="searchParams.state" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                    <select x-model="searchParams.state" @change="performSearch()" class="w-full p-2 border rounded-lg bg-white">
                                         <option value="">All States</option>
                                         <option value="NSW">New South Wales</option>
                                         <option value="VIC">Victoria</option>
@@ -327,40 +481,48 @@
                                 </div>
                                 
                                 <button @click="performSearch()" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                                    <i class="fas fa-robot mr-2"></i> AI Match Lawyers
+                                    <i class="fas fa-search mr-2"></i> Find My Lawyers
                                 </button>
                             </div>
                         </div>
                         
                         <!-- Quick Filters -->
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <div class="bg-gray-50 rounded-lg p-4">
                             <h4 class="font-medium mb-4">Quick Filters</h4>
                             <div class="flex flex-wrap gap-2">
-                                <button @click="setQuickFilter('divorce')" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                                <button @click="setQuickFilter('divorce')" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
                                     Divorce
                                 </button>
-                                <button @click="setQuickFilter('conveyancing')" class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm">
+                                <button @click="setQuickFilter('conveyancing')" class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
                                     First Home
                                 </button>
-                                <button @click="setQuickFilter('immigration')" class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-sm">
+                                <button @click="setQuickFilter('immigration')" class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
                                     Partner Visa
                                 </button>
-                                <button @click="setQuickFilter('top-tier')" class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-full text-sm">
+                                <button @click="setQuickFilter('top-tier')" class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
                                     Top Tier
                                 </button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Right Column - Results -->
-                    <div class="lg:col-span-2">
+                    <!-- Right Column - Results and Map -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Map Section -->
+                        <div x-show="searchParams.state" class="bg-white rounded-lg shadow-md p-4">
+                            <h4 class="font-medium mb-3 flex items-center">
+                                <i class="fas fa-map-marker-alt mr-2 text-green-600"></i>
+                                Lawyer Locations in <span x-text="getStateName(searchParams.state)"></span>
+                            </h4>
+                            <div id="lawyerMap"></div>
+                        </div>
                         <div class="flex justify-between items-center mb-6">
                             <h4 class="font-serif text-xl font-bold">Matched Lawyers</h4>
                             <div class="flex items-center space-x-4">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">
+                                <span class="text-sm text-gray-600">
                                     <span x-text="filteredLawyers.length"></span> results
                                 </span>
-                                <select x-model="sortBy" @change="sortResults()" class="p-2 border rounded-lg dark:bg-gray-800">
+                                <select x-model="sortBy" @change="sortResults()" class="p-2 border rounded-lg bg-white">
                                     <option value="match">Best Match</option>
                                     <option value="experience">Most Experience</option>
                                     <option value="rate">Lowest Rate</option>
@@ -372,20 +534,21 @@
                         <!-- Loading State -->
                         <div x-show="isLoading" class="text-center py-12">
                             <div class="loading-spinner mx-auto mb-4"></div>
-                            <p>AI is analyzing and matching lawyers...</p>
+                            <p>Analyzing and matching lawyers...</p>
                         </div>
                         
                         <!-- No Results -->
                         <div x-show="!isLoading && filteredLawyers.length === 0" class="text-center py-12">
                             <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
                             <h5 class="font-medium mb-2">No matches found</h5>
-                            <p class="text-gray-600 dark:text-gray-400">Try adjusting your search criteria</p>
+                            <p class="text-gray-600">Try adjusting your search criteria</p>
                         </div>
                         
-                        <!-- Results Grid -->
-                        <div x-show="!isLoading && filteredLawyers.length > 0" class="space-y-6">
-                            <template x-for="(lawyer, index) in filteredLawyers" :key="lawyer.id">
-                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md card-hover overflow-hidden">
+                        <!-- Results Grid with Scrollable Container -->
+                        <div x-show="!isLoading && filteredLawyers.length > 0" class="lawyers-scroll-container">
+                            <div class="space-y-6">
+                                <template x-for="(lawyer, index) in filteredLawyers" :key="lawyer.id">
+                                <div class="bg-white rounded-xl shadow-md card-hover overflow-hidden">
                                     <div class="p-6">
                                         <div class="flex justify-between items-start mb-4">
                                             <div>
@@ -403,8 +566,8 @@
                                                         <i class="fas fa-clock mr-1"></i> 24h
                                                     </span>
                                                 </div>
-                                                <p class="text-green-600 dark:text-green-400 font-medium" x-text="lawyer.firm"></p>
-                                                <div class="flex items-center text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                <p class="text-green-600 font-medium" x-text="lawyer.firm"></p>
+                                                <div class="flex items-center text-sm text-gray-600 mt-1">
                                                     <i class="fas fa-map-marker-alt mr-1"></i>
                                                     <span x-text="lawyer.locationCity + ', ' + lawyer.locationState"></span>
                                                     <span class="mx-2">•</span>
@@ -421,7 +584,7 @@
                                         <div class="mb-4">
                                             <div class="flex flex-wrap gap-2 mb-3">
                                                 <template x-for="specialty in lawyer.specialties.slice(0, 3)" :key="specialty">
-                                                    <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm" 
+                                                    <span class="px-3 py-1 bg-gray-100 rounded-full text-sm" 
                                                           x-text="specialty"></span>
                                                 </template>
                                             </div>
@@ -479,7 +642,7 @@
                                                 </div>
                                             </div>
                                             <div class="flex space-x-3">
-                                                <button @click="toggleShortlist(lawyer.id)" class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                <button @click="toggleShortlist(lawyer.id)" class="px-4 py-2 border rounded-lg hover:bg-gray-50 hover:bg-gray-100 transition-colors">
                                                     <i class="fas" :class="isInShortlist(lawyer.id) ? 'fa-check text-green-600' : 'fa-plus'"></i>
                                                     <span class="ml-2" x-text="isInShortlist(lawyer.id) ? 'Saved' : 'Save'"></span>
                                                 </button>
@@ -491,6 +654,7 @@
                                     </div>
                                 </div>
                             </template>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -499,7 +663,7 @@
 
         <!-- Dashboard Section -->
         <section id="dashboard" x-show="currentUser" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="bg-white bg-white rounded-xl shadow-lg p-6">
                 <h3 class="font-serif text-2xl font-bold mb-6">Your Dashboard</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -523,11 +687,11 @@
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Recent Searches -->
-                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <div class="bg-gray-50 bg-gray-50 rounded-lg p-4">
                         <h4 class="font-medium mb-4">Recent Searches</h4>
                         <div class="space-y-3">
                             <template x-for="search in searchHistory.slice(0, 5)" :key="search.timestamp">
-                                <div class="flex justify-between items-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                <div class="flex justify-between items-center p-3 bg-white bg-white rounded-lg">
                                     <div>
                                         <div class="font-medium" x-text="search.practiceArea || 'All Areas'"></div>
                                         <div class="text-sm text-gray-500" x-text="search.state || 'All States'"></div>
@@ -539,7 +703,7 @@
                     </div>
                     
                     <!-- Analytics Chart -->
-                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                    <div class="bg-gray-50 bg-gray-50 rounded-lg p-4">
                         <h4 class="font-medium mb-4">Match Analytics</h4>
                         <canvas id="analyticsChart" width="400" height="200"></canvas>
                     </div>
@@ -549,7 +713,7 @@
 
         <!-- Shortlist Section -->
         <section id="shortlist" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="bg-white bg-white rounded-xl shadow-lg p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-serif text-2xl font-bold">Your Shortlist</h3>
                     <button @click="exportShortlist()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
@@ -560,13 +724,13 @@
                 <div x-show="shortlist.length === 0" class="text-center py-12">
                     <i class="fas fa-list text-4xl text-gray-400 mb-4"></i>
                     <h5 class="font-medium mb-2">Your shortlist is empty</h5>
-                    <p class="text-gray-600 dark:text-gray-400">Save lawyers to compare them later</p>
+                    <p class="text-gray-600 text-gray-600">Save lawyers to compare them later</p>
                 </div>
                 
                 <div x-show="shortlist.length > 0" class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
-                            <tr class="border-b dark:border-gray-700">
+                            <tr class="border-b border-gray-300">
                                 <th class="text-left py-3">Lawyer</th>
                                 <th class="text-left py-3">Firm</th>
                                 <th class="text-left py-3">Practice Area</th>
@@ -577,7 +741,7 @@
                         </thead>
                         <tbody>
                             <template x-for="lawyer in shortlist" :key="lawyer.id">
-                                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900">
+                                <tr class="border-b border-gray-300 hover:bg-gray-50 hover:bg-gray-50">
                                     <td class="py-3">
                                         <div class="font-medium" x-text="lawyer.name"></div>
                                     </td>
@@ -585,9 +749,9 @@
                                     <td class="py-3">
                                         <span class="px-3 py-1 rounded-full text-sm" 
                                               :class="{
-                                                'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200': lawyer.practiceArea === 'family',
-                                                'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200': lawyer.practiceArea === 'conveyancing',
-                                                'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200': lawyer.practiceArea === 'immigration'
+                                                'bg-purple-100 text-purple-800': lawyer.practiceArea === 'family',
+                                                'bg-green-100 text-green-800': lawyer.practiceArea === 'conveyancing',
+                                                'bg-blue-100 text-blue-800': lawyer.practiceArea === 'immigration'
                                               }"
                                               x-text="lawyer.practiceArea.charAt(0).toUpperCase() + lawyer.practiceArea.slice(1)">
                                         </span>
@@ -614,14 +778,14 @@
 
         <!-- Comparison Section -->
         <section id="compare" x-show="comparison.length > 0" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="bg-white bg-white rounded-xl shadow-lg p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-serif text-2xl font-bold">Compare Lawyers</h3>
                     <div class="flex space-x-3">
                         <button @click="exportComparison()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                             <i class="fas fa-download mr-2"></i> Export Comparison
                         </button>
-                        <button @click="clearComparison()" class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <button @click="clearComparison()" class="px-4 py-2 border rounded-lg hover:bg-gray-50 hover:bg-gray-100 transition-colors">
                             Clear All
                         </button>
                     </div>
@@ -630,7 +794,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
-                            <tr class="border-b dark:border-gray-700">
+                            <tr class="border-b border-gray-300">
                                 <th class="text-left py-3">Criteria</th>
                                 <template x-for="lawyer in comparison" :key="lawyer.id">
                                     <th class="text-left py-3">
@@ -641,31 +805,31 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border-b dark:border-gray-700">
+                            <tr class="border-b border-gray-300">
                                 <td class="py-3 font-medium">Practice Area</td>
                                 <template x-for="lawyer in comparison" :key="lawyer.id">
                                     <td class="py-3" x-text="lawyer.practiceArea.charAt(0).toUpperCase() + lawyer.practiceArea.slice(1)"></td>
                                 </template>
                             </tr>
-                            <tr class="border-b dark:border-gray-700">
+                            <tr class="border-b border-gray-300">
                                 <td class="py-3 font-medium">Experience</td>
                                 <template x-for="lawyer in comparison" :key="lawyer.id">
                                     <td class="py-3" x-text="lawyer.experienceYears + ' years'"></td>
                                 </template>
                             </tr>
-                            <tr class="border-b dark:border-gray-700">
+                            <tr class="border-b border-gray-300">
                                 <td class="py-3 font-medium">Success Rate</td>
                                 <template x-for="lawyer in comparison" :key="lawyer.id">
                                     <td class="py-3" x-text="lawyer.successRate + '%'"></td>
                                 </template>
                             </tr>
-                            <tr class="border-b dark:border-gray-700">
+                            <tr class="border-b border-gray-300">
                                 <td class="py-3 font-medium">Hourly Rate</td>
                                 <template x-for="lawyer in comparison" :key="lawyer.id">
                                     <td class="py-3" x-text="'$' + lawyer.hourlyRateMin + ' - $' + lawyer.hourlyRateMax"></td>
                                 </template>
                             </tr>
-                            <tr class="border-b dark:border-gray-700">
+                            <tr class="border-b border-gray-300">
                                 <td class="py-3 font-medium">Location</td>
                                 <template x-for="lawyer in comparison" :key="lawyer.id">
                                     <td class="py-3" x-text="lawyer.locationCity + ', ' + lawyer.locationState"></td>
@@ -689,26 +853,26 @@
 
         <!-- Admin Panel (Hidden by default) -->
         <section id="admin" x-show="currentUser && currentUser.role === 'admin'" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="bg-white bg-white rounded-xl shadow-lg p-6">
                 <h3 class="font-serif text-2xl font-bold mb-6">Admin Panel</h3>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Add Lawyer Form -->
                     <div class="lg:col-span-1">
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <div class="bg-gray-50 bg-gray-50 rounded-lg p-4">
                             <h4 class="font-medium mb-4">Add New Lawyer</h4>
                             <div class="space-y-4">
-                                <input type="text" x-model="newLawyer.name" placeholder="Full Name" class="w-full p-2 border rounded-lg dark:bg-gray-800">
-                                <input type="text" x-model="newLawyer.firm" placeholder="Firm Name" class="w-full p-2 border rounded-lg dark:bg-gray-800">
-                                <select x-model="newLawyer.practiceArea" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                <input type="text" x-model="newLawyer.name" placeholder="Full Name" class="w-full p-2 border rounded-lg bg-white">
+                                <input type="text" x-model="newLawyer.firm" placeholder="Firm Name" class="w-full p-2 border rounded-lg bg-white">
+                                <select x-model="newLawyer.practiceArea" class="w-full p-2 border rounded-lg bg-white">
                                     <option value="">Practice Area</option>
                                     <option value="family">Family Law</option>
                                     <option value="conveyancing">Conveyancing</option>
                                     <option value="immigration">Immigration</option>
                                 </select>
-                                <input type="number" x-model="newLawyer.experienceYears" placeholder="Experience Years" class="w-full p-2 border rounded-lg dark:bg-gray-800">
-                                <input type="number" x-model="newLawyer.hourlyRateMin" placeholder="Min Hourly Rate" class="w-full p-2 border rounded-lg dark:bg-gray-800">
-                                <input type="number" x-model="newLawyer.hourlyRateMax" placeholder="Max Hourly Rate" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                <input type="number" x-model="newLawyer.experienceYears" placeholder="Experience Years" class="w-full p-2 border rounded-lg bg-white">
+                                <input type="number" x-model="newLawyer.hourlyRateMin" placeholder="Min Hourly Rate" class="w-full p-2 border rounded-lg bg-white">
+                                <input type="number" x-model="newLawyer.hourlyRateMax" placeholder="Max Hourly Rate" class="w-full p-2 border rounded-lg bg-white">
                                 <button @click="addNewLawyer()" class="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
                                     Add Lawyer
                                 </button>
@@ -718,12 +882,12 @@
                     
                     <!-- Lawyer Management -->
                     <div class="lg:col-span-2">
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <div class="bg-gray-50 bg-gray-50 rounded-lg p-4">
                             <h4 class="font-medium mb-4">Manage Lawyers</h4>
                             <div class="overflow-x-auto">
                                 <table class="w-full">
                                     <thead>
-                                        <tr class="border-b dark:border-gray-700">
+                                        <tr class="border-b border-gray-300">
                                             <th class="text-left py-2">Name</th>
                                             <th class="text-left py-2">Firm</th>
                                             <th class="text-left py-2">Practice Area</th>
@@ -732,15 +896,15 @@
                                     </thead>
                                     <tbody>
                                         <template x-for="lawyer in lawyers.slice(0, 10)" :key="lawyer.id">
-                                            <tr class="border-b dark:border-gray-700">
+                                            <tr class="border-b border-gray-300">
                                                 <td class="py-2" x-text="lawyer.name"></td>
                                                 <td class="py-2" x-text="lawyer.firm"></td>
                                                 <td class="py-2">
                                                     <span class="px-2 py-1 rounded text-xs" 
                                                           :class="{
-                                                            'bg-purple-100 dark:bg-purple-900': lawyer.practiceArea === 'family',
-                                                            'bg-green-100 dark:bg-green-900': lawyer.practiceArea === 'conveyancing',
-                                                            'bg-blue-100 dark:bg-blue-900': lawyer.practiceArea === 'immigration'
+                                                            'bg-purple-100': lawyer.practiceArea === 'family',
+                                                            'bg-green-100': lawyer.practiceArea === 'conveyancing',
+                                                            'bg-blue-100': lawyer.practiceArea === 'immigration'
                                                           }"
                                                           x-text="lawyer.practiceArea">
                                                     </span>
@@ -764,7 +928,7 @@
 
     <!-- Auth Modal -->
     <div x-show="showAuthModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4">
+        <div class="bg-white bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-serif text-xl font-bold">Sign In or Register</h3>
@@ -775,12 +939,12 @@
                 
                 <div x-show="!showRegister">
                     <div class="space-y-4">
-                        <input type="email" x-model="auth.email" placeholder="Email" class="w-full p-3 border rounded-lg dark:bg-gray-900">
-                        <input type="password" x-model="auth.password" placeholder="Password" class="w-full p-3 border rounded-lg dark:bg-gray-900">
+                        <input type="email" x-model="auth.email" placeholder="Email" class="w-full p-3 border rounded-lg bg-gray-50">
+                        <input type="password" x-model="auth.password" placeholder="Password" class="w-full p-3 border rounded-lg bg-gray-50">
                         <button @click="login()" class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
                             Sign In
                         </button>
-                        <button @click="showRegister = true" class="w-full py-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                        <button @click="showRegister = true" class="w-full py-3 border rounded-lg hover:bg-gray-50 hover:bg-gray-50">
                             Create New Account
                         </button>
                     </div>
@@ -788,14 +952,14 @@
                 
                 <div x-show="showRegister">
                     <div class="space-y-4">
-                        <input type="text" x-model="register.name" placeholder="Full Name" class="w-full p-3 border rounded-lg dark:bg-gray-900">
-                        <input type="email" x-model="register.email" placeholder="Email" class="w-full p-3 border rounded-lg dark:bg-gray-900">
-                        <input type="password" x-model="register.password" placeholder="Password" class="w-full p-3 border rounded-lg dark:bg-gray-900">
-                        <input type="password" x-model="register.confirmPassword" placeholder="Confirm Password" class="w-full p-3 border rounded-lg dark:bg-gray-900">
+                        <input type="text" x-model="register.name" placeholder="Full Name" class="w-full p-3 border rounded-lg bg-gray-50">
+                        <input type="email" x-model="register.email" placeholder="Email" class="w-full p-3 border rounded-lg bg-gray-50">
+                        <input type="password" x-model="register.password" placeholder="Password" class="w-full p-3 border rounded-lg bg-gray-50">
+                        <input type="password" x-model="register.confirmPassword" placeholder="Confirm Password" class="w-full p-3 border rounded-lg bg-gray-50">
                         <button @click="register()" class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                             Create Account
                         </button>
-                        <button @click="showRegister = false" class="w-full py-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                        <button @click="showRegister = false" class="w-full py-3 border rounded-lg hover:bg-gray-50 hover:bg-gray-50">
                             Back to Sign In
                         </button>
                     </div>
@@ -806,19 +970,19 @@
 
     <!-- Export Modal -->
     <div x-show="showExportModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4">
+        <div class="bg-white bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
             <div class="p-6">
                 <h3 class="font-serif text-xl font-bold mb-6">Export Options</h3>
                 
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <button @click="exportFormat = 'pdf'" class="p-4 border rounded-lg text-center hover:bg-gray-50 dark:hover:bg-gray-900"
-                            :class="{'border-green-500 bg-green-50 dark:bg-green-900': exportFormat === 'pdf'}">
+                    <button @click="exportFormat = 'pdf'" class="p-4 border rounded-lg text-center hover:bg-gray-50 hover:bg-gray-50"
+                            :class="{'border-green-500 bg-green-50': exportFormat === 'pdf'}">
                         <i class="fas fa-file-pdf text-2xl text-red-500 mb-2"></i>
                         <div class="font-medium">PDF Report</div>
                         <div class="text-sm text-gray-500">Professional Summary</div>
                     </button>
-                    <button @click="exportFormat = 'csv'" class="p-4 border rounded-lg text-center hover:bg-gray-50 dark:hover:bg-gray-900"
-                            :class="{'border-green-500 bg-green-50 dark:bg-green-900': exportFormat === 'csv'}">
+                    <button @click="exportFormat = 'csv'" class="p-4 border rounded-lg text-center hover:bg-gray-50 hover:bg-gray-50"
+                            :class="{'border-green-500 bg-green-50': exportFormat === 'csv'}">
                         <i class="fas fa-file-csv text-2xl text-green-500 mb-2"></i>
                         <div class="font-medium">CSV Data</div>
                         <div class="text-sm text-gray-500">Spreadsheet Format</div>
@@ -826,7 +990,7 @@
                 </div>
                 
                 <div class="flex space-x-3">
-                    <button @click="showExportModal = false" class="flex-1 py-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                    <button @click="showExportModal = false" class="flex-1 py-3 border rounded-lg hover:bg-gray-50 hover:bg-gray-50">
                         Cancel
                     </button>
                     <button @click="performExport()" class="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
@@ -844,7 +1008,7 @@
                 <div>
                     <h4 class="font-serif text-lg font-bold mb-4">LegalConnect</h4>
                     <p class="text-gray-400 text-sm">
-                        AI-powered legal matching that crushes Law Connect. 
+                        Legal matching that crushes Law Connect. 
                         Instant results, transparent matching, completely free.
                     </p>
                 </div>
@@ -861,7 +1025,7 @@
                 <div>
                     <h5 class="font-medium mb-4">Features</h5>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white">AI Matching</a></li>
+                        <li><a href="#" class="hover:text-white">Smart Matching</a></li>
                         <li><a href="#" class="hover:text-white">Transparent Scoring</a></li>
                         <li><a href="#" class="hover:text-white">24h Response Guarantee</a></li>
                         <li><a href="#" class="hover:text-white">Free Export</a></li>
@@ -878,7 +1042,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-                &copy; 2024 LegalConnect. AI-powered legal matching platform with secure backend storage.
+                &copy; 2024 LegalConnect. Legal matching platform with secure backend storage.
             </div>
         </div>
     </footer>
@@ -924,8 +1088,9 @@
         function legalConnectApp() {
             return {
                 // App State
-                darkMode: false,
                 isLoading: false,
+                map: null,
+                mapMarkers: [],
                 showAuthModal: false,
                 showRegister: false,
                 showExportModal: false,
@@ -977,12 +1142,6 @@
                 
                 // Initialize the application
                 async init() {
-                    // Check for dark mode preference
-                    if (localStorage.getItem('darkMode') === 'true') {
-                        this.darkMode = true;
-                        document.body.classList.add('dark-mode');
-                    }
-                    
                     // Check for existing auth token
                     const token = localStorage.getItem('authToken');
                     if (token) {
@@ -994,6 +1153,9 @@
                     
                     // Load lawyers
                     await this.loadLawyers();
+                    
+                    // Initialize map
+                    this.initMap();
                     
                     // Setup chart
                     this.setupChart();
@@ -1036,11 +1198,149 @@
                     }
                 },
                 
-                // Toggle dark mode
-                toggleDarkMode() {
-                    this.darkMode = !this.darkMode;
-                    document.body.classList.toggle('dark-mode');
-                    localStorage.setItem('darkMode', this.darkMode);
+                // Get state name from abbreviation
+                getStateName(abbr) {
+                    const states = {
+                        'NSW': 'New South Wales',
+                        'VIC': 'Victoria',
+                        'QLD': 'Queensland',
+                        'WA': 'Western Australia',
+                        'SA': 'South Australia',
+                        'TAS': 'Tasmania',
+                        'ACT': 'ACT',
+                        'NT': 'Northern Territory'
+                    };
+                    return states[abbr] || abbr;
+                },
+                
+                // Initialize map
+                initMap() {
+                    // Wait for DOM to be ready
+                    setTimeout(() => {
+                        const mapElement = document.getElementById('lawyerMap');
+                        if (!mapElement || this.map) return;
+                        
+                        // Center on Australia (will be updated when state is selected)
+                        this.map = L.map('lawyerMap').setView([-25.2744, 133.7751], 6);
+                        
+                        // Add OpenStreetMap tiles
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors',
+                            maxZoom: 19
+                        }).addTo(this.map);
+                    }, 100);
+                },
+                
+                // Update map with lawyer locations
+                updateMap() {
+                    if (!this.searchParams.state) {
+                        // Clear map if no state selected
+                        if (this.map && this.mapMarkers.length > 0) {
+                            this.mapMarkers.forEach(marker => this.map.removeLayer(marker));
+                            this.mapMarkers = [];
+                        }
+                        return;
+                    }
+                    
+                    if (!this.map) {
+                        this.initMap();
+                        setTimeout(() => this.updateMap(), 500);
+                        return;
+                    }
+                    
+                    // Clear existing markers
+                    this.mapMarkers.forEach(marker => this.map.removeLayer(marker));
+                    this.mapMarkers = [];
+                    
+                    if (!this.searchParams.state || this.filteredLawyers.length === 0) {
+                        return;
+                    }
+                    
+                    // City coordinates (approximate)
+                    const cityCoords = {
+                        'Sydney': [-33.8688, 151.2093],
+                        'Parramatta': [-33.8148, 151.0029],
+                        'Newcastle': [-32.9283, 151.7817],
+                        'Wollongong': [-34.4278, 150.8931],
+                        'Melbourne': [-37.8136, 144.9631],
+                        'Geelong': [-38.1499, 144.3617],
+                        'Ballarat': [-37.5622, 143.8503],
+                        'Bendigo': [-36.7570, 144.2792],
+                        'Brisbane': [-27.4698, 153.0251],
+                        'Gold Coast': [-28.0167, 153.4000],
+                        'Sunshine Coast': [-26.6500, 153.0667],
+                        'Cairns': [-16.9186, 145.7781],
+                        'Perth': [-31.9505, 115.8605],
+                        'Fremantle': [-32.0569, 115.7439],
+                        'Mandurah': [-32.5369, 115.7217],
+                        'Bunbury': [-33.3272, 115.6414],
+                        'Adelaide': [-34.9285, 138.6007],
+                        'Mount Gambier': [-37.8313, 140.7794],
+                        'Whyalla': [-33.0333, 137.5833],
+                        'Port Augusta': [-32.4924, 137.7628],
+                        'Hobart': [-42.8821, 147.3272],
+                        'Launceston': [-41.4332, 147.1441],
+                        'Devonport': [-41.1772, 146.3514],
+                        'Burnie': [-41.0556, 145.9069],
+                        'Canberra': [-35.2809, 149.1300],
+                        'Darwin': [-12.4634, 130.8456],
+                        'Alice Springs': [-23.6980, 133.8807]
+                    };
+                    
+                    // Collect all valid coordinates
+                    const validCoords = [];
+                    const cityCounts = {};
+                    
+                    // Add markers for each lawyer and collect coordinates
+                    this.filteredLawyers.forEach(lawyer => {
+                        const city = lawyer.locationCity;
+                        const coords = cityCoords[city];
+                        
+                        if (coords) {
+                            // Count cities for finding most common
+                            cityCounts[city] = (cityCounts[city] || 0) + 1;
+                            validCoords.push(coords);
+                            
+                            const marker = L.marker(coords).addTo(this.map);
+                            
+                            // Create popup content
+                            const popupContent = `
+                                <div class="map-marker-popup">
+                                    <strong>${lawyer.name}</strong><br>
+                                    ${lawyer.firm}<br>
+                                    <small>${lawyer.locationCity}, ${lawyer.locationState}</small><br>
+                                    <small>Match: ${lawyer.matchScore || 'N/A'}%</small>
+                                </div>
+                            `;
+                            
+                            marker.bindPopup(popupContent);
+                            this.mapMarkers.push(marker);
+                        }
+                    });
+                    
+                    // Set map view to city level
+                    if (validCoords.length > 0) {
+                        if (validCoords.length === 1) {
+                            // Single location - zoom to city level (12)
+                            this.map.setView(validCoords[0], 12);
+                        } else {
+                            // Multiple locations - find most common city or fit bounds
+                            const mostCommonCity = Object.keys(cityCounts).reduce((a, b) => 
+                                cityCounts[a] > cityCounts[b] ? a : b
+                            );
+                            
+                            if (mostCommonCity && cityCoords[mostCommonCity]) {
+                                // Center on most common city with city-level zoom
+                                this.map.setView(cityCoords[mostCommonCity], 11);
+                            } else {
+                                // Fit bounds to show all markers with padding
+                                const group = new L.featureGroup(this.mapMarkers);
+                                this.map.fitBounds(group.getBounds().pad(0.1), {
+                                    maxZoom: 12
+                                });
+                            }
+                        }
+                    }
                 },
                 
                 // Show toast notification
@@ -1283,6 +1583,9 @@
                         
                         this.isLoading = false;
                         this.showToast(`Found ${this.filteredLawyers.length} matching lawyers`, 'success');
+                        
+                        // Update map with new results
+                        this.updateMap();
                     } catch (error) {
                         this.isLoading = false;
                         this.showToast('Error performing search', 'error');

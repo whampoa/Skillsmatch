@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LegalConnect | AI-Powered Legal Expertise Matching - Better Than Law Connect</title>
+    <title>LegalConnect | Legal Expertise Matching - Better Than Law Connect</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fonts -->
@@ -163,6 +163,94 @@
         @keyframes fadeOut {
             to { opacity: 0; }
         }
+
+        /* Modern enhancements */
+        .hero-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        .section-fade-in {
+            animation: sectionFadeIn 0.6s ease-out;
+        }
+
+        @keyframes sectionFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .stat-number {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modern-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modern-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .modern-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen" x-data="legalConnectApp()" x-init="init()">
@@ -170,24 +258,36 @@
     <div id="toastContainer"></div>
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white shadow-md dark:bg-gray-800 dark:text-white transition-colors duration-300">
-        <div class="container mx-auto px-4 py-3">
+    <header class="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm dark:shadow-gray-900/50 border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="text-2xl text-green-600 dark:text-green-400">
+                    <div class="text-2xl text-green-600 dark:text-green-400 transform hover:scale-110 transition-transform">
                         <i class="fas fa-balance-scale"></i>
                     </div>
                     <div>
-                        <h1 class="font-serif text-xl font-bold">LegalConnect</h1>
+                        <h1 class="font-serif text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">LegalConnect</h1>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Better Than Law Connect</p>
                     </div>
                 </div>
                 
-                <nav class="hidden md:flex space-x-6">
-                    <a href="#search" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Search</a>
-                    <a href="#dashboard" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Dashboard</a>
-                    <a href="#compare" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Compare</a>
-                    <a href="#shortlist" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Shortlist</a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#search" class="font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors relative group">
+                        Search
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+                    </a>
+                    <a href="#about" class="font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors relative group">
+                        About
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+                    </a>
+                    <a href="#compare" class="font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors relative group">
+                        Compare
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+                    </a>
+                    <a href="#shortlist" class="font-medium text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors relative group">
+                        Shortlist
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+                    </a>
                 </nav>
                 
                 <div class="flex items-center space-x-4">
@@ -197,7 +297,7 @@
                     </button>
                     
                     <template x-if="!currentUser">
-                        <button @click="showAuthModal = true" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <button @click="showAuthModal = true" class="px-5 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all shadow-md hover:shadow-lg font-medium">
                             Sign In
                         </button>
                     </template>
@@ -213,7 +313,6 @@
                                     <i class="fas fa-chevron-down text-xs"></i>
                                 </button>
                                 <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 hidden group-hover:block z-50">
-                                    <a href="#dashboard" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Dashboard</a>
                                     <a href="#profile" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
                                     <template x-if="currentUser.role === 'admin'">
                                         <a href="#admin" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Admin Panel</a>
@@ -229,53 +328,65 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
-        <div class="container mx-auto px-4">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="font-serif text-4xl md:text-5xl font-bold mb-6">
-                    Legal Matching That <span class="text-green-400">Crushes</span> Law Connect
+    <section class="hero-gradient text-white py-20 md:py-28 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-green-400 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-400 rounded-full blur-3xl"></div>
+        </div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-5xl mx-auto text-center section-fade-in">
+                <div class="mb-6">
+                    <span class="inline-block px-4 py-2 bg-green-500/20 border border-green-400/30 rounded-full text-sm font-medium text-green-300 mb-6">
+                        Trusted by thousands of Australians
+                    </span>
+                </div>
+                <h2 class="font-serif text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+                    Legal Matching That <span class="text-gradient">Crushes</span> Law Connect
                 </h2>
-                <p class="text-xl mb-8 text-gray-300">
-                    Instant AI-powered matching with 200+ Australian lawyers. No signup required. Completely free.
+                <p class="text-xl md:text-2xl mb-12 text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                    Instant matching with 200+ Australian lawyers. No signup required. Completely free.
                 </p>
-                <div class="flex flex-wrap justify-center gap-8 mb-12">
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">200+</div>
-                        <div class="text-gray-300">Australian Lawyers</div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-12 max-w-4xl mx-auto">
+                    <div class="feature-card bg-white/5 rounded-xl p-6 backdrop-blur-sm">
+                        <div class="stat-number text-4xl md:text-5xl font-bold mb-2">200+</div>
+                        <div class="text-gray-300 text-sm md:text-base">Australian Lawyers</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">100%</div>
-                        <div class="text-gray-300">Transparent Matching</div>
+                    <div class="feature-card bg-white/5 rounded-xl p-6 backdrop-blur-sm">
+                        <div class="stat-number text-4xl md:text-5xl font-bold mb-2">100%</div>
+                        <div class="text-gray-300 text-sm md:text-base">Transparent Matching</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">24h</div>
-                        <div class="text-gray-300">Response Guarantee</div>
+                    <div class="feature-card bg-white/5 rounded-xl p-6 backdrop-blur-sm">
+                        <div class="stat-number text-4xl md:text-5xl font-bold mb-2">24h</div>
+                        <div class="text-gray-300 text-sm md:text-base">Response Guarantee</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-400">$0</div>
-                        <div class="text-gray-300">Free Exports</div>
+                    <div class="feature-card bg-white/5 rounded-xl p-6 backdrop-blur-sm">
+                        <div class="stat-number text-4xl md:text-5xl font-bold mb-2">$0</div>
+                        <div class="text-gray-300 text-sm md:text-base">Free Exports</div>
                     </div>
                 </div>
-                <a href="#search" class="inline-block px-8 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium text-lg transition-colors">
-                    Start Searching - No Account Needed
+                <a href="#search" class="modern-button inline-block px-10 py-4 bg-green-600 hover:bg-green-700 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/40">
+                    <span class="relative z-10">Start Searching - No Account Needed</span>
                 </a>
             </div>
         </div>
     </section>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-12">
         <!-- Search Section -->
-        <section id="search" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-                <h3 class="font-serif text-2xl font-bold mb-6">Find Your Legal Practitioner</h3>
+        <section id="search" class="mb-16 section-fade-in">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
+                <div class="mb-8">
+                    <h3 class="font-serif text-3xl md:text-4xl font-bold mb-3">Find Your Legal Practitioner</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-lg">Search through our comprehensive database of verified Australian lawyers</p>
+                </div>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left Column - Search Filters -->
                     <div class="lg:col-span-1 space-y-6">
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                            <h4 class="font-medium mb-4 flex items-center">
-                                <i class="fas fa-filter mr-2 text-green-600"></i>
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                            <h4 class="font-semibold text-lg mb-6 flex items-center">
+                                <i class="fas fa-filter mr-2 text-green-600 dark:text-green-400"></i>
                                 Search Filters
                             </h4>
                             
@@ -326,15 +437,15 @@
                                     </label>
                                 </div>
                                 
-                                <button @click="performSearch()" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                                    <i class="fas fa-robot mr-2"></i> AI Match Lawyers
+                                <button @click="performSearch()" class="w-full py-3.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold transition-all shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/40 transform hover:scale-[1.02]">
+                                    <i class="fas fa-search mr-2"></i> Match Lawyers
                                 </button>
                             </div>
                         </div>
                         
                         <!-- Quick Filters -->
-                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                            <h4 class="font-medium mb-4">Quick Filters</h4>
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                            <h4 class="font-semibold text-lg mb-4">Quick Filters</h4>
                             <div class="flex flex-wrap gap-2">
                                 <button @click="setQuickFilter('divorce')" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
                                     Divorce
@@ -372,7 +483,7 @@
                         <!-- Loading State -->
                         <div x-show="isLoading" class="text-center py-12">
                             <div class="loading-spinner mx-auto mb-4"></div>
-                            <p>AI is analyzing and matching lawyers...</p>
+                            <p>Analyzing and matching lawyers...</p>
                         </div>
                         
                         <!-- No Results -->
@@ -385,8 +496,8 @@
                         <!-- Results Grid -->
                         <div x-show="!isLoading && filteredLawyers.length > 0" class="space-y-6">
                             <template x-for="(lawyer, index) in filteredLawyers" :key="lawyer.id">
-                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md card-hover overflow-hidden">
-                                    <div class="p-6">
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 card-hover overflow-hidden transition-all duration-300">
+                                    <div class="p-6 md:p-8">
                                         <div class="flex justify-between items-start mb-4">
                                             <div>
                                                 <div class="flex items-center space-x-3">
@@ -497,59 +608,58 @@
             </div>
         </section>
 
-        <!-- Dashboard Section -->
-        <section id="dashboard" x-show="currentUser" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-                <h3 class="font-serif text-2xl font-bold mb-6">Your Dashboard</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6">
-                        <div class="text-3xl font-bold mb-2" x-text="shortlist.length"></div>
-                        <div class="text-green-100">Saved Lawyers</div>
-                    </div>
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6">
-                        <div class="text-3xl font-bold mb-2" x-text="searchHistory.length"></div>
-                        <div class="text-blue-100">Searches</div>
-                    </div>
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6">
-                        <div class="text-3xl font-bold mb-2" x-text="exportHistory.length"></div>
-                        <div class="text-purple-100">Exports</div>
-                    </div>
-                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white rounded-xl p-6">
-                        <div class="text-3xl font-bold mb-2" x-text="comparisonCount"></div>
-                        <div class="text-yellow-100">Comparisons</div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Recent Searches -->
-                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                        <h4 class="font-medium mb-4">Recent Searches</h4>
-                        <div class="space-y-3">
-                            <template x-for="search in searchHistory.slice(0, 5)" :key="search.timestamp">
-                                <div class="flex justify-between items-center p-3 bg-white dark:bg-gray-800 rounded-lg">
-                                    <div>
-                                        <div class="font-medium" x-text="search.practiceArea || 'All Areas'"></div>
-                                        <div class="text-sm text-gray-500" x-text="search.state || 'All States'"></div>
-                                    </div>
-                                    <div class="text-sm text-gray-500" x-text="formatDate(search.timestamp)"></div>
-                                </div>
-                            </template>
+        <!-- About Section -->
+        <section id="about" class="mb-16 section-fade-in">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100 dark:border-gray-700">
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="font-serif text-3xl md:text-4xl font-bold mb-6 text-center">About LegalConnect</h3>
+                    <div class="prose prose-lg max-w-none dark:prose-invert">
+                        <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">
+                            LegalConnect is Australia's premier legal matching platform, designed to connect you with the right legal practitioner for your specific needs. We've built a comprehensive database of over 200 verified Australian lawyers across multiple practice areas.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                            <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 rounded-xl p-6">
+                                <h4 class="font-bold text-xl mb-3 flex items-center">
+                                    <i class="fas fa-check-circle text-green-600 dark:text-green-400 mr-2"></i>
+                                    Our Mission
+                                </h4>
+                                <p class="text-gray-700 dark:text-gray-300">
+                                    To make finding the right legal representation simple, transparent, and accessible to everyone. No complicated signups, no hidden fees.
+                                </p>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-xl p-6">
+                                <h4 class="font-bold text-xl mb-3 flex items-center">
+                                    <i class="fas fa-users text-blue-600 dark:text-blue-400 mr-2"></i>
+                                    Trusted Network
+                                </h4>
+                                <p class="text-gray-700 dark:text-gray-300">
+                                    Our network includes top-tier firms, mid-tier practices, and boutique specialists across all Australian states and territories.
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- Analytics Chart -->
-                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                        <h4 class="font-medium mb-4">Match Analytics</h4>
-                        <canvas id="analyticsChart" width="400" height="200"></canvas>
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 mb-6">
+                            <h4 class="font-bold text-xl mb-4">How It Works</h4>
+                            <ol class="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
+                                <li>Enter your search criteria - practice area, location, experience level, and budget</li>
+                                <li>Our matching algorithm analyzes your requirements against our lawyer database</li>
+                                <li>Review matched lawyers with transparent scoring and detailed breakdowns</li>
+                                <li>Save favorites to your shortlist and compare multiple lawyers side-by-side</li>
+                                <li>Export your results in PDF or CSV format for your records</li>
+                            </ol>
+                        </div>
+                        <div class="text-center">
+                            <a href="#search" class="inline-block px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-lg transition-colors">
+                                Start Your Search
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Shortlist Section -->
-        <section id="shortlist" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <section id="shortlist" class="mb-16 section-fade-in">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-serif text-2xl font-bold">Your Shortlist</h3>
                     <button @click="exportShortlist()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
@@ -613,8 +723,8 @@
         </section>
 
         <!-- Comparison Section -->
-        <section id="compare" x-show="comparison.length > 0" class="mb-12">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <section id="compare" x-show="comparison.length > 0" class="mb-16 section-fade-in">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-10 border border-gray-100 dark:border-gray-700">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-serif text-2xl font-bold">Compare Lawyers</h3>
                     <div class="flex space-x-3">
@@ -837,43 +947,86 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
+    <!-- Contact Section -->
+    <section id="contact" class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-16 section-fade-in">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12 border border-gray-200 dark:border-gray-700">
+                    <h3 class="font-serif text-3xl font-bold mb-6 text-center">Contact Us</h3>
+                    <p class="text-center text-gray-600 dark:text-gray-400 mb-8">
+                        Have questions or feedback? We'd love to hear from you.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 text-center">
+                            <i class="fas fa-envelope text-3xl text-green-600 dark:text-green-400 mb-4"></i>
+                            <h4 class="font-bold mb-2">Email</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">info@legalconnect.com.au</p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 text-center">
+                            <i class="fas fa-phone text-3xl text-green-600 dark:text-green-400 mb-4"></i>
+                            <h4 class="font-bold mb-2">Phone</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">1800 LEGAL (1800 534 25)</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                        <h4 class="font-bold mb-4">Send us a message</h4>
+                        <form class="space-y-4">
+                            <input type="text" placeholder="Your Name" class="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700">
+                            <input type="email" placeholder="Your Email" class="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700">
+                            <textarea placeholder="Your Message" rows="4" class="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700"></textarea>
+                            <button type="submit" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16 border-t border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <div>
-                    <h4 class="font-serif text-lg font-bold mb-4">LegalConnect</h4>
-                    <p class="text-gray-400 text-sm">
-                        AI-powered legal matching that crushes Law Connect. 
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="text-xl text-green-400">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h4 class="font-serif text-xl font-bold">LegalConnect</h4>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Legal matching that crushes Law Connect. 
                         Instant results, transparent matching, completely free.
                     </p>
                 </div>
                 <div>
-                    <h5 class="font-medium mb-4">Practice Areas</h5>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white">Family Law</a></li>
-                        <li><a href="#" class="hover:text-white">Divorce</a></li>
-                        <li><a href="#" class="hover:text-white">Child Custody</a></li>
-                        <li><a href="#" class="hover:text-white">Conveyancing</a></li>
-                        <li><a href="#" class="hover:text-white">Immigration</a></li>
+                    <h5 class="font-semibold mb-4 text-white">Practice Areas</h5>
+                    <ul class="space-y-2.5 text-sm text-gray-400">
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Family Law</a></li>
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Divorce</a></li>
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Child Custody</a></li>
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Conveyancing</a></li>
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Immigration</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h5 class="font-medium mb-4">Features</h5>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white">AI Matching</a></li>
-                        <li><a href="#" class="hover:text-white">Transparent Scoring</a></li>
-                        <li><a href="#" class="hover:text-white">24h Response Guarantee</a></li>
-                        <li><a href="#" class="hover:text-white">Free Export</a></li>
-                        <li><a href="#" class="hover:text-white">No Signup Required</a></li>
+                    <h5 class="font-semibold mb-4 text-white">Features</h5>
+                    <ul class="space-y-2.5 text-sm text-gray-400">
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Smart Matching</a></li>
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Transparent Scoring</a></li>
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>24h Response Guarantee</a></li>
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Free Export</a></li>
+                        <li><a href="#search" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>No Signup Required</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h5 class="font-medium mb-4">Legal</h5>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white">Disclaimer</a></li>
-                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                    <h5 class="font-semibold mb-4 text-white">Legal</h5>
+                    <ul class="space-y-2.5 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Disclaimer</a></li>
+                        <li><a href="#" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Terms of Service</a></li>
+                        <li><a href="#contact" class="hover:text-green-400 transition-colors flex items-center group"><span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2 group-hover:bg-green-400 transition-colors"></span>Contact</a></li>
                     </ul>
                 </div>
             </div>
@@ -944,7 +1097,6 @@
                 init() {
                     this.loadFromLocalStorage();
                     this.loadLawyers();
-                    this.setupChart();
                     
                     // Check for dark mode preference
                     if (localStorage.getItem('darkMode') === 'true') {
@@ -1597,54 +1749,6 @@
                         localStorage.setItem('legalConnect_lawyers', JSON.stringify(this.lawyers));
                         this.showToast('Lawyer deleted successfully', 'success');
                     }
-                },
-                
-                // Analytics Chart
-                setupChart() {
-                    setTimeout(() => {
-                        const ctx = document.getElementById('analyticsChart');
-                        if (!ctx) return;
-                        
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Family Law', 'Conveyancing', 'Immigration'],
-                                datasets: [{
-                                    label: 'Average Match Score',
-                                    data: [85, 78, 82],
-                                    backgroundColor: [
-                                        'rgba(139, 92, 246, 0.7)',
-                                        'rgba(16, 185, 129, 0.7)',
-                                        'rgba(59, 130, 246, 0.7)'
-                                    ],
-                                    borderColor: [
-                                        'rgb(139, 92, 246)',
-                                        'rgb(16, 185, 129)',
-                                        'rgb(59, 130, 246)'
-                                    ],
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                    },
-                                    title: {
-                                        display: true,
-                                        text: 'Match Performance by Practice Area'
-                                    }
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        max: 100
-                                    }
-                                }
-                            }
-                        });
-                    }, 1000);
                 }
             };
         }
