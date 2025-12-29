@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegalConnect | AI-Powered Legal Expertise Matching - Better Than Law Connect</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Alpine.js for interactivity -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- FileSaver.js for downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --primary-dark: #0A1A2F;
+            --primary-blue: #1A3A5F;
+            --accent-gold: #FFCD00;
+            --accent-green: #00843D;
+            --accent-green-light: #E6F7EF;
+            --light-bg: #F8F9FA;
+            --light-text: #6C757D;
+            --dark-text: #212529;
+            --white: #FFFFFF;
+            --border-light: #E9ECEF;
+            --shadow: 0 4px 12px rgba(10, 26, 47, 0.08);
+            --shadow-heavy: 0 8px 30px rgba(10, 26, 47, 0.12);
+            --transition: all 0.3s ease;
+            --success: #00843D;
+            --warning: #F59E0B;
+            --error: #DC2626;
+            --info: #3B82F6;
+            --family-law: #8B5CF6;
+            --conveyancing: #10B981;
+            --immigration: #3B82F6;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-serif {
+            font-family: 'Source Serif Pro', serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            transition: var(--transition);
+        }
+
+        body.dark-mode {
+            background-color: #0F172A;
+            color: #F1F5F9;
+            --primary-dark: #E2E8F0;
+            --primary-blue: #94A3B8;
+            --light-bg: #1E293B;
+            --light-text: #94A3B8;
+            --dark-text: #F1F5F9;
+            --white: #0F172A;
+            --border-light: #334155;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .badge-top-tier {
+            background: linear-gradient(135deg, #FFD700, #FFED4E);
+            color: #5C4033;
+        }
+
+        .badge-mid-tier {
+            background: linear-gradient(135deg, #C0C0C0, #E0E0E0);
+            color: #333;
+        }
+
+        .badge-boutique {
+            background: linear-gradient(135deg, #CD7F32, #E0A55E);
+            color: white;
+        }
+
+        .badge-guarantee {
+            background: linear-gradient(135deg, #00843D, #00C853);
+            color: white;
+        }
+
+        .match-breakdown-bar {
+            height: 6px;
+            background: var(--light-bg);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .match-breakdown-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .loading-spinner {
+            border: 3px solid var(--light-bg);
+            border-top: 3px solid var(--accent-green);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 9999;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        }
+
+        .toast-success { background-color: var(--success); }
+        .toast-error { background-color: var(--error); }
+        .toast-warning { background-color: var(--warning); }
+        .toast-info { background-color: var(--info); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen" x-data="legalConnectApp()" x-init="init()">
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-md dark:bg-gray-800 dark:text-white transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="text-2xl text-green-600 dark:text-green-400">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-serif text-xl font-bold">LegalConnect</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Better Than Law Connect</p>
+                    </div>
+                </div>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#search" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Search</a>
+                    <a href="#dashboard" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Dashboard</a>
+                    <a href="#compare" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Compare</a>
+                    <a href="#shortlist" class="font-medium hover:text-green-600 dark:hover:text-green-400 transition-colors">Shortlist</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <button @click="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-moon" x-show="!darkMode"></i>
+                        <i class="fas fa-sun" x-show="darkMode"></i>
+                    </button>
+                    
+                    <template x-if="!currentUser">
+                        <button @click="showAuthModal = true" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                            Sign In
+                        </button>
+                    </template>
+                    
+                    <template x-if="currentUser">
+                        <div class="flex items-center space-x-3">
+                            <div class="relative group">
+                                <button class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center">
+                                        <span x-text="currentUser.name.charAt(0)"></span>
+                                    </div>
+                                    <span x-text="currentUser.name.split(' ')[0]"></span>
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </button>
+                                <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 hidden group-hover:block z-50">
+                                    <a href="#dashboard" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Dashboard</a>
+                                    <a href="#profile" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                                    <template x-if="currentUser.role === 'admin'">
+                                        <a href="#admin" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Admin Panel</a>
+                                    </template>
+                                    <button @click="logout()" class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600">Logout</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="font-serif text-4xl md:text-5xl font-bold mb-6">
+                    Legal Matching That <span class="text-green-400">Crushes</span> Law Connect
+                </h2>
+                <p class="text-xl mb-8 text-gray-300">
+                    Instant AI-powered matching with 200+ Australian lawyers. No signup required. Completely free.
+                </p>
+                <div class="flex flex-wrap justify-center gap-8 mb-12">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-400">200+</div>
+                        <div class="text-gray-300">Australian Lawyers</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-400">100%</div>
+                        <div class="text-gray-300">Transparent Matching</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-400">24h</div>
+                        <div class="text-gray-300">Response Guarantee</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-400">$0</div>
+                        <div class="text-gray-300">Free Exports</div>
+                    </div>
+                </div>
+                <a href="#search" class="inline-block px-8 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium text-lg transition-colors">
+                    Start Searching - No Account Needed
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Search Section -->
+        <section id="search" class="mb-12">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h3 class="font-serif text-2xl font-bold mb-6">Find Your Legal Practitioner</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left Column - Search Filters -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                            <h4 class="font-medium mb-4 flex items-center">
+                                <i class="fas fa-filter mr-2 text-green-600"></i>
+                                Search Filters
+                            </h4>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Practice Area</label>
+                                    <select x-model="searchParams.practiceArea" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                        <option value="">All Practice Areas</option>
+                                        <option value="family">Family Law</option>
+                                        <option value="conveyancing">Conveyancing</option>
+                                        <option value="immigration">Immigration</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">State</label>
+                                    <select x-model="searchParams.state" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                        <option value="">All States</option>
+                                        <option value="NSW">New South Wales</option>
+                                        <option value="VIC">Victoria</option>
+                                        <option value="QLD">Queensland</option>
+                                        <option value="WA">Western Australia</option>
+                                        <option value="SA">South Australia</option>
+                                        <option value="TAS">Tasmania</option>
+                                        <option value="ACT">ACT</option>
+                                        <option value="NT">Northern Territory</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">
+                                        Minimum Experience: <span x-text="searchParams.minExperience"></span> years
+                                    </label>
+                                    <input type="range" x-model="searchParams.minExperience" min="3" max="30" class="w-full">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">
+                                        Max Hourly Rate: $<span x-text="searchParams.maxRate"></span>
+                                    </label>
+                                    <input type="range" x-model="searchParams.maxRate" min="150" max="1200" step="50" class="w-full">
+                                </div>
+                                
+                                <div>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" x-model="searchParams.responseGuarantee" class="mr-2">
+                                        <span class="text-sm">24h Response Guarantee</span>
+                                    </label>
+                                </div>
+                                
+                                <button @click="performSearch()" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-robot mr-2"></i> AI Match Lawyers
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Filters -->
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                            <h4 class="font-medium mb-4">Quick Filters</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button @click="setQuickFilter('divorce')" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                                    Divorce
+                                </button>
+                                <button @click="setQuickFilter('conveyancing')" class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm">
+                                    First Home
+                                </button>
+                                <button @click="setQuickFilter('immigration')" class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-sm">
+                                    Partner Visa
+                                </button>
+                                <button @click="setQuickFilter('top-tier')" class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-full text-sm">
+                                    Top Tier
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column - Results -->
+                    <div class="lg:col-span-2">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="font-serif text-xl font-bold">Matched Lawyers</h4>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">
+                                    <span x-text="filteredLawyers.length"></span> results
+                                </span>
+                                <select x-model="sortBy" @change="sortResults()" class="p-2 border rounded-lg dark:bg-gray-800">
+                                    <option value="match">Best Match</option>
+                                    <option value="experience">Most Experience</option>
+                                    <option value="rate">Lowest Rate</option>
+                                    <option value="success">Highest Success</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Loading State -->
+                        <div x-show="isLoading" class="text-center py-12">
+                            <div class="loading-spinner mx-auto mb-4"></div>
+                            <p>AI is analyzing and matching lawyers...</p>
+                        </div>
+                        
+                        <!-- No Results -->
+                        <div x-show="!isLoading && filteredLawyers.length === 0" class="text-center py-12">
+                            <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+                            <h5 class="font-medium mb-2">No matches found</h5>
+                            <p class="text-gray-600 dark:text-gray-400">Try adjusting your search criteria</p>
+                        </div>
+                        
+                        <!-- Results Grid -->
+                        <div x-show="!isLoading && filteredLawyers.length > 0" class="space-y-6">
+                            <template x-for="(lawyer, index) in filteredLawyers" :key="lawyer.id">
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md card-hover overflow-hidden">
+                                    <div class="p-6">
+                                        <div class="flex justify-between items-start mb-4">
+                                            <div>
+                                                <div class="flex items-center space-x-3">
+                                                    <h5 class="font-bold text-lg" x-text="lawyer.name"></h5>
+                                                    <span class="text-xs px-2 py-1 rounded-full" 
+                                                          :class="{
+                                                            'badge-top-tier': lawyer.tier === 'top',
+                                                            'badge-mid-tier': lawyer.tier === 'mid',
+                                                            'badge-boutique': lawyer.tier === 'boutique'
+                                                          }" 
+                                                          x-text="lawyer.tier === 'top' ? 'TOP TIER' : lawyer.tier === 'mid' ? 'MID TIER' : 'BOUTIQUE'">
+                                                    </span>
+                                                    <span x-show="lawyer.responseGuarantee" class="badge-guarantee text-xs px-2 py-1 rounded-full">
+                                                        <i class="fas fa-clock mr-1"></i> 24h
+                                                    </span>
+                                                </div>
+                                                <p class="text-green-600 dark:text-green-400 font-medium" x-text="lawyer.firm"></p>
+                                                <div class="flex items-center text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                                    <span x-text="lawyer.locationCity + ', ' + lawyer.locationState"></span>
+                                                    <span class="mx-2">•</span>
+                                                    <i class="fas fa-briefcase mr-1"></i>
+                                                    <span x-text="lawyer.experienceYears + ' years'"></span>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-2xl font-bold text-green-600" x-text="lawyer.matchScore + '%'"></div>
+                                                <div class="text-xs text-gray-500">Match Score</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <div class="flex flex-wrap gap-2 mb-3">
+                                                <template x-for="specialty in lawyer.specialties.slice(0, 3)" :key="specialty">
+                                                    <span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm" 
+                                                          x-text="specialty"></span>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Match Breakdown -->
+                                        <div class="mb-6">
+                                            <div class="text-sm font-medium mb-2">Match Breakdown</div>
+                                            <div class="space-y-2">
+                                                <div>
+                                                    <div class="flex justify-between text-sm mb-1">
+                                                        <span>Practice Area</span>
+                                                        <span x-text="lawyer.matchBreakdown.practiceArea + '/30'"></span>
+                                                    </div>
+                                                    <div class="match-breakdown-bar">
+                                                        <div class="match-breakdown-fill bg-green-500" :style="'width: ' + (lawyer.matchBreakdown.practiceArea/30*100) + '%'"></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="flex justify-between text-sm mb-1">
+                                                        <span>Location</span>
+                                                        <span x-text="lawyer.matchBreakdown.location + '/25'"></span>
+                                                    </div>
+                                                    <div class="match-breakdown-bar">
+                                                        <div class="match-breakdown-fill bg-blue-500" :style="'width: ' + (lawyer.matchBreakdown.location/25*100) + '%'"></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="flex justify-between text-sm mb-1">
+                                                        <span>Experience</span>
+                                                        <span x-text="lawyer.matchBreakdown.experience + '/20'"></span>
+                                                    </div>
+                                                    <div class="match-breakdown-bar">
+                                                        <div class="match-breakdown-fill bg-purple-500" :style="'width: ' + (lawyer.matchBreakdown.experience/20*100) + '%'"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <div class="flex items-center space-x-4 text-sm">
+                                                    <div>
+                                                        <div class="font-medium" x-text="'$' + lawyer.hourlyRateMin + ' - $' + lawyer.hourlyRateMax"></div>
+                                                        <div class="text-gray-500">Hourly Rate</div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium" x-text="lawyer.successRate + '%'"></div>
+                                                        <div class="text-gray-500">Success Rate</div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium" x-text="lawyer.caseCount + '+'"></div>
+                                                        <div class="text-gray-500">Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex space-x-3">
+                                                <button @click="toggleShortlist(lawyer.id)" class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                    <i class="fas" :class="isInShortlist(lawyer.id) ? 'fa-check text-green-600' : 'fa-plus'"></i>
+                                                    <span class="ml-2" x-text="isInShortlist(lawyer.id) ? 'Saved' : 'Save'"></span>
+                                                </button>
+                                                <button @click="addToComparison(lawyer)" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                                    Compare
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" x-show="currentUser" class="mb-12">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h3 class="font-serif text-2xl font-bold mb-6">Your Dashboard</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6">
+                        <div class="text-3xl font-bold mb-2" x-text="shortlist.length"></div>
+                        <div class="text-green-100">Saved Lawyers</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6">
+                        <div class="text-3xl font-bold mb-2" x-text="searchHistory.length"></div>
+                        <div class="text-blue-100">Searches</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6">
+                        <div class="text-3xl font-bold mb-2" x-text="exportHistory.length"></div>
+                        <div class="text-purple-100">Exports</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white rounded-xl p-6">
+                        <div class="text-3xl font-bold mb-2" x-text="comparisonCount"></div>
+                        <div class="text-yellow-100">Comparisons</div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Searches -->
+                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <h4 class="font-medium mb-4">Recent Searches</h4>
+                        <div class="space-y-3">
+                            <template x-for="search in searchHistory.slice(0, 5)" :key="search.timestamp">
+                                <div class="flex justify-between items-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                    <div>
+                                        <div class="font-medium" x-text="search.practiceArea || 'All Areas'"></div>
+                                        <div class="text-sm text-gray-500" x-text="search.state || 'All States'"></div>
+                                    </div>
+                                    <div class="text-sm text-gray-500" x-text="formatDate(search.timestamp)"></div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- Analytics Chart -->
+                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <h4 class="font-medium mb-4">Match Analytics</h4>
+                        <canvas id="analyticsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shortlist Section -->
+        <section id="shortlist" class="mb-12">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-serif text-2xl font-bold">Your Shortlist</h3>
+                    <button @click="exportShortlist()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i> Export Shortlist
+                    </button>
+                </div>
+                
+                <div x-show="shortlist.length === 0" class="text-center py-12">
+                    <i class="fas fa-list text-4xl text-gray-400 mb-4"></i>
+                    <h5 class="font-medium mb-2">Your shortlist is empty</h5>
+                    <p class="text-gray-600 dark:text-gray-400">Save lawyers to compare them later</p>
+                </div>
+                
+                <div x-show="shortlist.length > 0" class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b dark:border-gray-700">
+                                <th class="text-left py-3">Lawyer</th>
+                                <th class="text-left py-3">Firm</th>
+                                <th class="text-left py-3">Practice Area</th>
+                                <th class="text-left py-3">Experience</th>
+                                <th class="text-left py-3">Rate</th>
+                                <th class="text-left py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="lawyer in shortlist" :key="lawyer.id">
+                                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900">
+                                    <td class="py-3">
+                                        <div class="font-medium" x-text="lawyer.name"></div>
+                                    </td>
+                                    <td class="py-3" x-text="lawyer.firm"></td>
+                                    <td class="py-3">
+                                        <span class="px-3 py-1 rounded-full text-sm" 
+                                              :class="{
+                                                'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200': lawyer.practiceArea === 'family',
+                                                'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200': lawyer.practiceArea === 'conveyancing',
+                                                'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200': lawyer.practiceArea === 'immigration'
+                                              }"
+                                              x-text="lawyer.practiceArea.charAt(0).toUpperCase() + lawyer.practiceArea.slice(1)">
+                                        </span>
+                                    </td>
+                                    <td class="py-3" x-text="lawyer.experienceYears + ' years'"></td>
+                                    <td class="py-3" x-text="'$' + lawyer.hourlyRateMin + ' - $' + lawyer.hourlyRateMax"></td>
+                                    <td class="py-3">
+                                        <div class="flex space-x-2">
+                                            <button @click="removeFromShortlist(lawyer.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <button @click="addToComparison(lawyer)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-balance-scale"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Section -->
+        <section id="compare" x-show="comparison.length > 0" class="mb-12">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-serif text-2xl font-bold">Compare Lawyers</h3>
+                    <div class="flex space-x-3">
+                        <button @click="exportComparison()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                            <i class="fas fa-download mr-2"></i> Export Comparison
+                        </button>
+                        <button @click="clearComparison()" class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b dark:border-gray-700">
+                                <th class="text-left py-3">Criteria</th>
+                                <template x-for="lawyer in comparison" :key="lawyer.id">
+                                    <th class="text-left py-3">
+                                        <div class="font-bold" x-text="lawyer.name"></div>
+                                        <div class="text-sm text-gray-500" x-text="lawyer.firm"></div>
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b dark:border-gray-700">
+                                <td class="py-3 font-medium">Practice Area</td>
+                                <template x-for="lawyer in comparison" :key="lawyer.id">
+                                    <td class="py-3" x-text="lawyer.practiceArea.charAt(0).toUpperCase() + lawyer.practiceArea.slice(1)"></td>
+                                </template>
+                            </tr>
+                            <tr class="border-b dark:border-gray-700">
+                                <td class="py-3 font-medium">Experience</td>
+                                <template x-for="lawyer in comparison" :key="lawyer.id">
+                                    <td class="py-3" x-text="lawyer.experienceYears + ' years'"></td>
+                                </template>
+                            </tr>
+                            <tr class="border-b dark:border-gray-700">
+                                <td class="py-3 font-medium">Success Rate</td>
+                                <template x-for="lawyer in comparison" :key="lawyer.id">
+                                    <td class="py-3" x-text="lawyer.successRate + '%'"></td>
+                                </template>
+                            </tr>
+                            <tr class="border-b dark:border-gray-700">
+                                <td class="py-3 font-medium">Hourly Rate</td>
+                                <template x-for="lawyer in comparison" :key="lawyer.id">
+                                    <td class="py-3" x-text="'$' + lawyer.hourlyRateMin + ' - $' + lawyer.hourlyRateMax"></td>
+                                </template>
+                            </tr>
+                            <tr class="border-b dark:border-gray-700">
+                                <td class="py-3 font-medium">Location</td>
+                                <template x-for="lawyer in comparison" :key="lawyer.id">
+                                    <td class="py-3" x-text="lawyer.locationCity + ', ' + lawyer.locationState"></td>
+                                </template>
+                            </tr>
+                            <tr>
+                                <td class="py-3 font-medium">Actions</td>
+                                <template x-for="lawyer in comparison" :key="lawyer.id">
+                                    <td class="py-3">
+                                        <button @click="removeFromComparison(lawyer.id)" class="text-red-600 hover:text-red-800">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </template>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Panel (Hidden by default) -->
+        <section id="admin" x-show="currentUser && currentUser.role === 'admin'" class="mb-12">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h3 class="font-serif text-2xl font-bold mb-6">Admin Panel</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Add Lawyer Form -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                            <h4 class="font-medium mb-4">Add New Lawyer</h4>
+                            <div class="space-y-4">
+                                <input type="text" x-model="newLawyer.name" placeholder="Full Name" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                <input type="text" x-model="newLawyer.firm" placeholder="Firm Name" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                <select x-model="newLawyer.practiceArea" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                    <option value="">Practice Area</option>
+                                    <option value="family">Family Law</option>
+                                    <option value="conveyancing">Conveyancing</option>
+                                    <option value="immigration">Immigration</option>
+                                </select>
+                                <input type="number" x-model="newLawyer.experienceYears" placeholder="Experience Years" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                <input type="number" x-model="newLawyer.hourlyRateMin" placeholder="Min Hourly Rate" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                <input type="number" x-model="newLawyer.hourlyRateMax" placeholder="Max Hourly Rate" class="w-full p-2 border rounded-lg dark:bg-gray-800">
+                                <button @click="addNewLawyer()" class="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                    Add Lawyer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lawyer Management -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                            <h4 class="font-medium mb-4">Manage Lawyers</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b dark:border-gray-700">
+                                            <th class="text-left py-2">Name</th>
+                                            <th class="text-left py-2">Firm</th>
+                                            <th class="text-left py-2">Practice Area</th>
+                                            <th class="text-left py-2">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template x-for="lawyer in lawyers.slice(0, 10)" :key="lawyer.id">
+                                            <tr class="border-b dark:border-gray-700">
+                                                <td class="py-2" x-text="lawyer.name"></td>
+                                                <td class="py-2" x-text="lawyer.firm"></td>
+                                                <td class="py-2">
+                                                    <span class="px-2 py-1 rounded text-xs" 
+                                                          :class="{
+                                                            'bg-purple-100 dark:bg-purple-900': lawyer.practiceArea === 'family',
+                                                            'bg-green-100 dark:bg-green-900': lawyer.practiceArea === 'conveyancing',
+                                                            'bg-blue-100 dark:bg-blue-900': lawyer.practiceArea === 'immigration'
+                                                          }"
+                                                          x-text="lawyer.practiceArea">
+                                                    </span>
+                                                </td>
+                                                <td class="py-2">
+                                                    <button @click="deleteLawyer(lawyer.id)" class="text-red-600 hover:text-red-800">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Auth Modal -->
+    <div x-show="showAuthModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-serif text-xl font-bold">Sign In or Register</h3>
+                    <button @click="showAuthModal = false" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div x-show="!showRegister">
+                    <div class="space-y-4">
+                        <input type="email" x-model="auth.email" placeholder="Email" class="w-full p-3 border rounded-lg dark:bg-gray-900">
+                        <input type="password" x-model="auth.password" placeholder="Password" class="w-full p-3 border rounded-lg dark:bg-gray-900">
+                        <button @click="login()" class="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            Sign In
+                        </button>
+                        <button @click="showRegister = true" class="w-full py-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                            Create New Account
+                        </button>
+                    </div>
+                </div>
+                
+                <div x-show="showRegister">
+                    <div class="space-y-4">
+                        <input type="text" x-model="register.name" placeholder="Full Name" class="w-full p-3 border rounded-lg dark:bg-gray-900">
+                        <input type="email" x-model="register.email" placeholder="Email" class="w-full p-3 border rounded-lg dark:bg-gray-900">
+                        <input type="password" x-model="register.password" placeholder="Password" class="w-full p-3 border rounded-lg dark:bg-gray-900">
+                        <input type="password" x-model="register.confirmPassword" placeholder="Confirm Password" class="w-full p-3 border rounded-lg dark:bg-gray-900">
+                        <button @click="register()" class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Create Account
+                        </button>
+                        <button @click="showRegister = false" class="w-full py-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                            Back to Sign In
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div x-show="showExportModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <h3 class="font-serif text-xl font-bold mb-6">Export Options</h3>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <button @click="exportFormat = 'pdf'" class="p-4 border rounded-lg text-center hover:bg-gray-50 dark:hover:bg-gray-900"
+                            :class="{'border-green-500 bg-green-50 dark:bg-green-900': exportFormat === 'pdf'}">
+                        <i class="fas fa-file-pdf text-2xl text-red-500 mb-2"></i>
+                        <div class="font-medium">PDF Report</div>
+                        <div class="text-sm text-gray-500">Professional Summary</div>
+                    </button>
+                    <button @click="exportFormat = 'csv'" class="p-4 border rounded-lg text-center hover:bg-gray-50 dark:hover:bg-gray-900"
+                            :class="{'border-green-500 bg-green-50 dark:bg-green-900': exportFormat === 'csv'}">
+                        <i class="fas fa-file-csv text-2xl text-green-500 mb-2"></i>
+                        <div class="font-medium">CSV Data</div>
+                        <div class="text-sm text-gray-500">Spreadsheet Format</div>
+                    </button>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button @click="showExportModal = false" class="flex-1 py-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                        Cancel
+                    </button>
+                    <button @click="performExport()" class="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-serif text-lg font-bold mb-4">LegalConnect</h4>
+                    <p class="text-gray-400 text-sm">
+                        AI-powered legal matching that crushes Law Connect. 
+                        Instant results, transparent matching, completely free.
+                    </p>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">Practice Areas</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Family Law</a></li>
+                        <li><a href="#" class="hover:text-white">Divorce</a></li>
+                        <li><a href="#" class="hover:text-white">Child Custody</a></li>
+                        <li><a href="#" class="hover:text-white">Conveyancing</a></li>
+                        <li><a href="#" class="hover:text-white">Immigration</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">Features</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">AI Matching</a></li>
+                        <li><a href="#" class="hover:text-white">Transparent Scoring</a></li>
+                        <li><a href="#" class="hover:text-white">24h Response Guarantee</a></li>
+                        <li><a href="#" class="hover:text-white">Free Export</a></li>
+                        <li><a href="#" class="hover:text-white">No Signup Required</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-medium mb-4">Legal</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Disclaimer</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                &copy; 2024 LegalConnect. This is a client-side demonstration application. All data is stored locally in your browser. No backend required.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+
+        function legalConnectApp() {
+            return {
+                // App State
+                darkMode: false,
+                isLoading: false,
+                showAuthModal: false,
+                showRegister: false,
+                showExportModal: false,
+                exportFormat: 'pdf',
+                
+                // Current User
+                currentUser: null,
+                
+                // Auth Data
+                auth: {
+                    email: '',
+                    password: ''
+                },
+                register: {
+                    name: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: ''
+                },
+                
+                // Search
+                searchParams: {
+                    practiceArea: '',
+                    state: '',
+                    minExperience: 5,
+                    maxRate: 500,
+                    responseGuarantee: false
+                },
+                filteredLawyers: [],
+                sortBy: 'match',
+                
+                // User Data
+                shortlist: [],
+                searchHistory: [],
+                exportHistory: [],
+                comparison: [],
+                comparisonCount: 0,
+                
+                // New Lawyer (for admin)
+                newLawyer: {
+                    name: '',
+                    firm: '',
+                    practiceArea: '',
+                    experienceYears: 5,
+                    hourlyRateMin: 200,
+                    hourlyRateMax: 400
+                },
+                
+                // Initialize the application
+                init() {
+                    this.loadFromLocalStorage();
+                    this.loadLawyers();
+                    this.setupChart();
+                    
+                    // Check for dark mode preference
+                    if (localStorage.getItem('darkMode') === 'true') {
+                        this.darkMode = true;
+                        document.body.classList.add('dark-mode');
+                    }
+                    
+                    // Auto-search on page load
+                    this.performSearch();
+                },
+                
+                // Load data from localStorage
+                loadFromLocalStorage() {
+                    try {
+                        // Load user data
+                        const userData = localStorage.getItem('legalConnect_user');
+                        if (userData) {
+                            this.currentUser = JSON.parse(userData);
+                        }
+                        
+                        // Load shortlist
+                        const shortlistData = localStorage.getItem('legalConnect_shortlist');
+                        if (shortlistData) {
+                            this.shortlist = JSON.parse(shortlistData);
+                        }
+                        
+                        // Load search history
+                        const historyData = localStorage.getItem('legalConnect_history');
+                        if (historyData) {
+                            this.searchHistory = JSON.parse(historyData);
+                        }
+                        
+                        // Load export history
+                        const exportData = localStorage.getItem('legalConnect_exports');
+                        if (exportData) {
+                            this.exportHistory = JSON.parse(exportData);
+                        }
+                        
+                        // Load comparison
+                        const compareData = localStorage.getItem('legalConnect_comparison');
+                        if (compareData) {
+                            this.comparison = JSON.parse(compareData);
+                        }
+                    } catch (e) {
+                        console.error('Error loading from localStorage:', e);
+                    }
+                },
+                
+                // Save data to localStorage
+                saveToLocalStorage() {
+                    try {
+                        if (this.currentUser) {
+                            localStorage.setItem('legalConnect_user', JSON.stringify(this.currentUser));
+                        }
+                        localStorage.setItem('legalConnect_shortlist', JSON.stringify(this.shortlist));
+                        localStorage.setItem('legalConnect_history', JSON.stringify(this.searchHistory));
+                        localStorage.setItem('legalConnect_exports', JSON.stringify(this.exportHistory));
+                        localStorage.setItem('legalConnect_comparison', JSON.stringify(this.comparison));
+                        localStorage.setItem('darkMode', this.darkMode);
+                    } catch (e) {
+                        console.error('Error saving to localStorage:', e);
+                    }
+                },
+                
+                // Toggle dark mode
+                toggleDarkMode() {
+                    this.darkMode = !this.darkMode;
+                    document.body.classList.toggle('dark-mode');
+                    this.saveToLocalStorage();
+                },
+                
+                // Show toast notification
+                showToast(message, type = 'info') {
+                    const container = document.getElementById('toastContainer');
+                    const toast = document.createElement('div');
+                    toast.className = `toast toast-${type} fade-in`;
+                    toast.textContent = message;
+                    container.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                },
+                
+                // Format date
+                formatDate(timestamp) {
+                    return new Date(timestamp).toLocaleDateString();
+                },
+                
+                // Authentication
+                async login() {
+                    if (!this.auth.email || !this.auth.password) {
+                        this.showToast('Please enter email and password', 'error');
+                        return;
+                    }
+                    
+                    // Simple client-side authentication
+                    const users = JSON.parse(localStorage.getItem('legalConnect_users') || '[]');
+                    const user = users.find(u => u.email === this.auth.email && u.password === btoa(this.auth.password));
+                    
+                    if (user) {
+                        this.currentUser = user;
+                        this.showAuthModal = false;
+                        this.auth = { email: '', password: '' };
+                        this.saveToLocalStorage();
+                        this.showToast('Successfully signed in!', 'success');
+                    } else {
+                        this.showToast('Invalid email or password', 'error');
+                    }
+                },
+                
+                async register() {
+                    if (!this.register.name || !this.register.email || !this.register.password) {
+                        this.showToast('Please fill all fields', 'error');
+                        return;
+                    }
+                    
+                    if (this.register.password !== this.register.confirmPassword) {
+                        this.showToast('Passwords do not match', 'error');
+                        return;
+                    }
+                    
+                    // Check if user already exists
+                    const users = JSON.parse(localStorage.getItem('legalConnect_users') || '[]');
+                    if (users.find(u => u.email === this.register.email)) {
+                        this.showToast('User already exists', 'error');
+                        return;
+                    }
+                    
+                    // Create new user
+                    const newUser = {
+                        id: Date.now(),
+                        name: this.register.name,
+                        email: this.register.email,
+                        password: btoa(this.register.password), // Simple encoding (NOT secure for production)
+                        role: 'user',
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    users.push(newUser);
+                    localStorage.setItem('legalConnect_users', JSON.stringify(users));
+                    
+                    this.currentUser = newUser;
+                    this.showAuthModal = false;
+                    this.register = { name: '', email: '', password: '', confirmPassword: '' };
+                    this.showRegister = false;
+                    this.saveToLocalStorage();
+                    this.showToast('Account created successfully!', 'success');
+                },
+                
+                logout() {
+                    this.currentUser = null;
+                    this.saveToLocalStorage();
+                    this.showToast('Successfully logged out', 'success');
+                },
+                
+                // Lawyer Database - 200+ Australian Lawyers
+                lawyers: [],
+                
+                loadLawyers() {
+                    // Check if lawyers are already loaded
+                    const savedLawyers = localStorage.getItem('legalConnect_lawyers');
+                    if (savedLawyers) {
+                        this.lawyers = JSON.parse(savedLawyers);
+                    } else {
+                        // Load initial lawyer database
+                        this.lawyers = this.generateLawyerDatabase();
+                        localStorage.setItem('legalConnect_lawyers', JSON.stringify(this.lawyers));
+                    }
+                },
+                
+                generateLawyerDatabase() {
+                    const practiceAreas = ['family', 'conveyancing', 'immigration'];
+                    const states = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'];
+                    const cities = {
+                        'NSW': ['Sydney', 'Parramatta', 'Newcastle', 'Wollongong'],
+                        'VIC': ['Melbourne', 'Geelong', 'Ballarat', 'Bendigo'],
+                        'QLD': ['Brisbane', 'Gold Coast', 'Sunshine Coast', 'Cairns'],
+                        'WA': ['Perth', 'Fremantle', 'Mandurah', 'Bunbury'],
+                        'SA': ['Adelaide', 'Mount Gambier', 'Whyalla', 'Port Augusta'],
+                        'TAS': ['Hobart', 'Launceston', 'Devonport', 'Burnie'],
+                        'ACT': ['Canberra'],
+                        'NT': ['Darwin', 'Alice Springs']
+                    };
+                    
+                    const firstNames = [
+                        'Sarah', 'James', 'Michael', 'Emma', 'David', 'Olivia', 'William', 'Sophia', 
+                        'Joseph', 'Isabella', 'Charles', 'Mia', 'Thomas', 'Amelia', 'Robert', 'Charlotte',
+                        'Daniel', 'Harper', 'Matthew', 'Evelyn', 'Christopher', 'Abigail', 'Andrew', 'Emily',
+                        'Joshua', 'Elizabeth', 'Ryan', 'Sofia', 'Jack', 'Avery', 'Nathan', 'Ella', 'Kevin', 'Scarlett'
+                    ];
+                    
+                    const lastNames = [
+                        'Smith', 'Jones', 'Williams', 'Brown', 'Taylor', 'Wilson', 'Davis', 'Evans',
+                        'Thomas', 'Roberts', 'Johnson', 'Walker', 'White', 'Harris', 'Martin', 'Thompson',
+                        'Robinson', 'Clark', 'Lewis', 'Lee', 'Hall', 'Allen', 'King', 'Wright', 'Scott',
+                        'Green', 'Adams', 'Baker', 'Nelson', 'Carter', 'Mitchell', 'Perez', 'Roberts', 'Turner'
+                    ];
+                    
+                    const firms = [
+                        'Family Law Partners', 'Conveyancing Experts', 'Immigration Solutions', 'Legal Alliance',
+                        'Justice Partners', 'Advocate Legal', 'Horizon Law', 'Summit Legal', 'Pinnacle Lawyers',
+                        'Unity Legal', 'Resolution Law', 'Fairway Legal', 'Harmony Law', 'Integrity Legal'
+                    ];
+                    
+                    const specialties = {
+                        family: ['Divorce', 'Child Custody', 'Property Settlement', 'Spousal Maintenance', 'Mediation', 'Parenting Orders'],
+                        conveyancing: ['Residential', 'Commercial', 'Off-the-Plan', 'Auction', 'Strata Title', 'Rural Property'],
+                        immigration: ['Partner Visas', 'Skilled Migration', 'Student Visas', 'Employer Sponsorship', 'Citizenship', 'AAT Appeals']
+                    };
+                    
+                    const lawyers = [];
+                    
+                    // Generate 200+ lawyers
+                    for (let i = 1; i <= 200; i++) {
+                        const practiceArea = practiceAreas[Math.floor(Math.random() * practiceAreas.length)];
+                        const state = states[Math.floor(Math.random() * states.length)];
+                        const city = cities[state][Math.floor(Math.random() * cities[state].length)];
+                        const tier = Math.random() > 0.7 ? 'top' : Math.random() > 0.5 ? 'mid' : 'boutique';
+                        
+                        const lawyer = {
+                            id: i,
+                            name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
+                            firm: firms[Math.floor(Math.random() * firms.length)],
+                            tier: tier,
+                            practiceArea: practiceArea,
+                            specialties: specialties[practiceArea].slice(0, 3 + Math.floor(Math.random() * 3)),
+                            experienceYears: 5 + Math.floor(Math.random() * 25),
+                            caseCount: 50 + Math.floor(Math.random() * 950),
+                            successRate: 70 + Math.floor(Math.random() * 29),
+                            hourlyRateMin: practiceArea === 'family' ? 300 : practiceArea === 'conveyancing' ? 200 : 250,
+                            hourlyRateMax: practiceArea === 'family' ? 800 : practiceArea === 'conveyancing' ? 500 : 600,
+                            locationCity: city,
+                            locationState: state,
+                            verified: Math.random() > 0.2,
+                            mediationCertified: practiceArea === 'family' ? Math.random() > 0.5 : false,
+                            responseGuarantee: Math.random() > 0.7,
+                            maraNumber: practiceArea === 'immigration' ? 'MARN' + (1000000 + i) : null,
+                            bio: `${practiceArea.charAt(0).toUpperCase() + practiceArea.slice(1)} specialist with extensive experience.`,
+                            avatarColor: '#' + Math.floor(Math.random()*16777215).toString(16)
+                        };
+                        
+                        // Adjust rates based on tier
+                        if (tier === 'top') {
+                            lawyer.hourlyRateMin *= 1.5;
+                            lawyer.hourlyRateMax *= 1.5;
+                        } else if (tier === 'boutique') {
+                            lawyer.hourlyRateMin *= 0.8;
+                            lawyer.hourlyRateMax *= 0.8;
+                        }
+                        
+                        lawyers.push(lawyer);
+                    }
+                    
+                    return lawyers;
+                },
+                
+                // Search and Matching
+                performSearch() {
+                    this.isLoading = true;
+                    
+                    // Simulate AI processing delay
+                    setTimeout(() => {
+                        this.filteredLawyers = this.lawyers
+                            .filter(lawyer => this.filterLawyer(lawyer))
+                            .map(lawyer => {
+                                const matchScore = this.calculateMatchScore(lawyer);
+                                const matchBreakdown = this.calculateMatchBreakdown(lawyer);
+                                return {
+                                    ...lawyer,
+                                    matchScore,
+                                    matchBreakdown
+                                };
+                            });
+                        
+                        // Sort results
+                        this.sortResults();
+                        
+                        // Save to search history
+                        if (this.currentUser) {
+                            this.searchHistory.unshift({
+                                ...this.searchParams,
+                                timestamp: new Date().toISOString(),
+                                resultCount: this.filteredLawyers.length
+                            });
+                            
+                            if (this.searchHistory.length > 50) {
+                                this.searchHistory = this.searchHistory.slice(0, 50);
+                            }
+                            
+                            this.saveToLocalStorage();
+                        }
+                        
+                        this.isLoading = false;
+                        this.showToast(`Found ${this.filteredLawyers.length} matching lawyers`, 'success');
+                    }, 500);
+                },
+                
+                filterLawyer(lawyer) {
+                    // Practice area filter
+                    if (this.searchParams.practiceArea && lawyer.practiceArea !== this.searchParams.practiceArea) {
+                        return false;
+                    }
+                    
+                    // State filter
+                    if (this.searchParams.state && lawyer.locationState !== this.searchParams.state) {
+                        return false;
+                    }
+                    
+                    // Experience filter
+                    if (lawyer.experienceYears < this.searchParams.minExperience) {
+                        return false;
+                    }
+                    
+                    // Rate filter
+                    if (lawyer.hourlyRateMin > this.searchParams.maxRate) {
+                        return false;
+                    }
+                    
+                    // Response guarantee filter
+                    if (this.searchParams.responseGuarantee && !lawyer.responseGuarantee) {
+                        return false;
+                    }
+                    
+                    return true;
+                },
+                
+                calculateMatchScore(lawyer) {
+                    let score = 0;
+                    
+                    // Practice area match (30 points)
+                    if (this.searchParams.practiceArea === lawyer.practiceArea) {
+                        score += 30;
+                    } else if (!this.searchParams.practiceArea) {
+                        score += 15; // Half points if no specific area selected
+                    }
+                    
+                    // Location match (25 points)
+                    if (this.searchParams.state === lawyer.locationState) {
+                        score += 25;
+                    } else if (!this.searchParams.state) {
+                        score += 12.5; // Half points if no state selected
+                    }
+                    
+                    // Experience match (20 points)
+                    if (lawyer.experienceYears >= this.searchParams.minExperience) {
+                        const experienceScore = Math.min(20, (lawyer.experienceYears / 30) * 20);
+                        score += experienceScore;
+                    }
+                    
+                    // Price match (15 points)
+                    if (lawyer.hourlyRateMax <= this.searchParams.maxRate) {
+                        const priceScore = 15 - ((lawyer.hourlyRateMax / this.searchParams.maxRate) * 15);
+                        score += Math.max(0, priceScore);
+                    }
+                    
+                    // Success rate bonus (10 points)
+                    score += (lawyer.successRate / 100) * 10;
+                    
+                    // Tier bonus (adjust based on search)
+                    if (lawyer.tier === 'top') {
+                        score += 5;
+                    }
+                    
+                    // Response guarantee bonus
+                    if (lawyer.responseGuarantee) {
+                        score += 3;
+                    }
+                    
+                    return Math.min(Math.round(score), 100);
+                },
+                
+                calculateMatchBreakdown(lawyer) {
+                    return {
+                        practiceArea: this.searchParams.practiceArea === lawyer.practiceArea ? 30 : (!this.searchParams.practiceArea ? 15 : 0),
+                        location: this.searchParams.state === lawyer.locationState ? 25 : (!this.searchParams.state ? 12.5 : 0),
+                        experience: Math.min(20, (lawyer.experienceYears / 30) * 20)
+                    };
+                },
+                
+                sortResults() {
+                    this.filteredLawyers.sort((a, b) => {
+                        switch(this.sortBy) {
+                            case 'experience':
+                                return b.experienceYears - a.experienceYears;
+                            case 'rate':
+                                return a.hourlyRateMin - b.hourlyRateMin;
+                            case 'success':
+                                return b.successRate - a.successRate;
+                            default: // match
+                                return b.matchScore - a.matchScore;
+                        }
+                    });
+                },
+                
+                // Quick Filters
+                setQuickFilter(type) {
+                    switch(type) {
+                        case 'divorce':
+                            this.searchParams.practiceArea = 'family';
+                            this.searchParams.state = 'NSW';
+                            this.searchParams.minExperience = 10;
+                            this.showToast('Divorce search filter applied', 'info');
+                            break;
+                        case 'conveyancing':
+                            this.searchParams.practiceArea = 'conveyancing';
+                            this.searchParams.state = 'VIC';
+                            this.searchParams.maxRate = 400;
+                            this.showToast('Conveyancing search filter applied', 'info');
+                            break;
+                        case 'immigration':
+                            this.searchParams.practiceArea = 'immigration';
+                            this.searchParams.state = '';
+                            this.searchParams.responseGuarantee = true;
+                            this.showToast('Immigration search filter applied', 'info');
+                            break;
+                        case 'top-tier':
+                            this.searchParams.practiceArea = '';
+                            this.searchParams.maxRate = 1000;
+                            this.showToast('Top tier filter applied', 'info');
+                            break;
+                    }
+                    this.performSearch();
+                },
+                
+                // Shortlist Management
+                isInShortlist(lawyerId) {
+                    return this.shortlist.some(l => l.id === lawyerId);
+                },
+                
+                toggleShortlist(lawyerId) {
+                    const lawyer = this.lawyers.find(l => l.id === lawyerId);
+                    if (!lawyer) return;
+                    
+                    if (this.isInShortlist(lawyerId)) {
+                        this.shortlist = this.shortlist.filter(l => l.id !== lawyerId);
+                        this.showToast('Removed from shortlist', 'info');
+                    } else {
+                        this.shortlist.push(lawyer);
+                        this.showToast('Added to shortlist', 'success');
+                    }
+                    
+                    this.saveToLocalStorage();
+                },
+                
+                removeFromShortlist(lawyerId) {
+                    this.shortlist = this.shortlist.filter(l => l.id !== lawyerId);
+                    this.saveToLocalStorage();
+                    this.showToast('Removed from shortlist', 'info');
+                },
+                
+                // Comparison Management
+                addToComparison(lawyer) {
+                    if (this.comparison.length >= 3) {
+                        this.showToast('Maximum 3 lawyers can be compared', 'error');
+                        return;
+                    }
+                    
+                    if (!this.comparison.some(l => l.id === lawyer.id)) {
+                        this.comparison.push(lawyer);
+                        this.comparisonCount++;
+                        this.saveToLocalStorage();
+                        this.showToast('Added to comparison', 'success');
+                    }
+                },
+                
+                removeFromComparison(lawyerId) {
+                    this.comparison = this.comparison.filter(l => l.id !== lawyerId);
+                    this.saveToLocalStorage();
+                },
+                
+                clearComparison() {
+                    this.comparison = [];
+                    this.saveToLocalStorage();
+                    this.showToast('Comparison cleared', 'info');
+                },
+                
+                // Export Functions
+                exportShortlist() {
+                    if (this.shortlist.length === 0) {
+                        this.showToast('Your shortlist is empty', 'error');
+                        return;
+                    }
+                    
+                    this.showExportModal = true;
+                },
+                
+                exportComparison() {
+                    if (this.comparison.length === 0) {
+                        this.showToast('No lawyers to compare', 'error');
+                        return;
+                    }
+                    
+                    this.exportFormat = 'pdf';
+                    this.performExport(this.comparison, 'comparison');
+                },
+                
+                performExport(data = this.shortlist, type = 'shortlist') {
+                    if (!data || data.length === 0) {
+                        this.showToast('No data to export', 'error');
+                        return;
+                    }
+                    
+                    if (this.exportFormat === 'pdf') {
+                        this.exportToPDF(data, type);
+                    } else if (this.exportFormat === 'csv') {
+                        this.exportToCSV(data, type);
+                    }
+                    
+                    this.showExportModal = false;
+                    
+                    // Save to export history
+                    if (this.currentUser) {
+                        this.exportHistory.unshift({
+                            type: type,
+                            format: this.exportFormat,
+                            count: data.length,
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        if (this.exportHistory.length > 50) {
+                            this.exportHistory = this.exportHistory.slice(0, 50);
+                        }
+                        
+                        this.saveToLocalStorage();
+                    }
+                },
+                
+                exportToPDF(data, type) {
+                    try {
+                        const doc = new jsPDF();
+                        
+                        // Title
+                        doc.setFontSize(20);
+                        doc.setTextColor(0, 132, 61); // Green color
+                        doc.text('LegalConnect Report', 20, 20);
+                        
+                        // Subtitle
+                        doc.setFontSize(12);
+                        doc.setTextColor(100, 100, 100);
+                        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 30);
+                        doc.text(`Type: ${type === 'shortlist' ? 'Shortlist' : 'Comparison'}`, 20, 37);
+                        
+                        // Content
+                        let y = 50;
+                        data.forEach((lawyer, index) => {
+                            if (y > 250) {
+                                doc.addPage();
+                                y = 20;
+                            }
+                            
+                            doc.setFontSize(14);
+                            doc.setTextColor(0, 0, 0);
+                            doc.text(`${index + 1}. ${lawyer.name}`, 20, y);
+                            
+                            doc.setFontSize(10);
+                            doc.text(`Firm: ${lawyer.firm}`, 20, y + 7);
+                            doc.text(`Practice Area: ${lawyer.practiceArea.charAt(0).toUpperCase() + lawyer.practiceArea.slice(1)}`, 20, y + 14);
+                            doc.text(`Experience: ${lawyer.experienceYears} years`, 20, y + 21);
+                            doc.text(`Hourly Rate: $${lawyer.hourlyRateMin} - $${lawyer.hourlyRateMax}`, 20, y + 28);
+                            doc.text(`Success Rate: ${lawyer.successRate}%`, 20, y + 35);
+                            
+                            y += 45;
+                        });
+                        
+                        // Footer
+                        doc.setFontSize(8);
+                        doc.setTextColor(150, 150, 150);
+                        doc.text('Generated by LegalConnect - Better Than Law Connect', 20, 280);
+                        
+                        // Save the PDF
+                        const fileName = `legalconnect-${type}-${new Date().getTime()}.pdf`;
+                        doc.save(fileName);
+                        
+                        this.showToast('PDF exported successfully', 'success');
+                    } catch (error) {
+                        console.error('PDF export error:', error);
+                        this.showToast('Error exporting PDF', 'error');
+                    }
+                },
+                
+                exportToCSV(data, type) {
+                    try {
+                        // Create CSV content
+                        let csv = 'Name,Firm,Practice Area,Experience (years),Hourly Rate Min,Hourly Rate Max,Success Rate %,Location\n';
+                        
+                        data.forEach(lawyer => {
+                            csv += `"${lawyer.name}","${lawyer.firm}","${lawyer.practiceArea}",${lawyer.experienceYears},${lawyer.hourlyRateMin},${lawyer.hourlyRateMax},${lawyer.successRate},"${lawyer.locationCity}, ${lawyer.locationState}"\n`;
+                        });
+                        
+                        // Create blob and download
+                        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                        const fileName = `legalconnect-${type}-${new Date().getTime()}.csv`;
+                        saveAs(blob, fileName);
+                        
+                        this.showToast('CSV exported successfully', 'success');
+                    } catch (error) {
+                        console.error('CSV export error:', error);
+                        this.showToast('Error exporting CSV', 'error');
+                    }
+                },
+                
+                // Admin Functions
+                addNewLawyer() {
+                    if (!this.newLawyer.name || !this.newLawyer.firm || !this.newLawyer.practiceArea) {
+                        this.showToast('Please fill all required fields', 'error');
+                        return;
+                    }
+                    
+                    const newLawyer = {
+                        id: this.lawyers.length + 1,
+                        name: this.newLawyer.name,
+                        firm: this.newLawyer.firm,
+                        tier: 'mid',
+                        practiceArea: this.newLawyer.practiceArea,
+                        specialties: [],
+                        experienceYears: this.newLawyer.experienceYears || 5,
+                        caseCount: Math.floor(Math.random() * 500) + 50,
+                        successRate: Math.floor(Math.random() * 20) + 75,
+                        hourlyRateMin: this.newLawyer.hourlyRateMin || 200,
+                        hourlyRateMax: this.newLawyer.hourlyRateMax || 400,
+                        locationCity: 'Sydney',
+                        locationState: 'NSW',
+                        verified: true,
+                        mediationCertified: false,
+                        responseGuarantee: false,
+                        maraNumber: null,
+                        bio: 'New lawyer added via admin panel.',
+                        avatarColor: '#' + Math.floor(Math.random()*16777215).toString(16)
+                    };
+                    
+                    this.lawyers.unshift(newLawyer);
+                    localStorage.setItem('legalConnect_lawyers', JSON.stringify(this.lawyers));
+                    
+                    this.newLawyer = {
+                        name: '',
+                        firm: '',
+                        practiceArea: '',
+                        experienceYears: 5,
+                        hourlyRateMin: 200,
+                        hourlyRateMax: 400
+                    };
+                    
+                    this.showToast('New lawyer added successfully', 'success');
+                },
+                
+                deleteLawyer(lawyerId) {
+                    if (confirm('Are you sure you want to delete this lawyer?')) {
+                        this.lawyers = this.lawyers.filter(l => l.id !== lawyerId);
+                        localStorage.setItem('legalConnect_lawyers', JSON.stringify(this.lawyers));
+                        this.showToast('Lawyer deleted successfully', 'success');
+                    }
+                },
+                
+                // Analytics Chart
+                setupChart() {
+                    setTimeout(() => {
+                        const ctx = document.getElementById('analyticsChart');
+                        if (!ctx) return;
+                        
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Family Law', 'Conveyancing', 'Immigration'],
+                                datasets: [{
+                                    label: 'Average Match Score',
+                                    data: [85, 78, 82],
+                                    backgroundColor: [
+                                        'rgba(139, 92, 246, 0.7)',
+                                        'rgba(16, 185, 129, 0.7)',
+                                        'rgba(59, 130, 246, 0.7)'
+                                    ],
+                                    borderColor: [
+                                        'rgb(139, 92, 246)',
+                                        'rgb(16, 185, 129)',
+                                        'rgb(59, 130, 246)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Match Performance by Practice Area'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        max: 100
+                                    }
+                                }
+                            }
+                        });
+                    }, 1000);
+                }
+            };
+        }
+    </script>
+</body>
+</html>
