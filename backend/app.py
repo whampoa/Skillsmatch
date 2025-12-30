@@ -34,7 +34,12 @@ def health_check():
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_frontend(path):
-    return app.send_static_file('index.html')
+    response = app.send_static_file('index.html')
+    # Disable caching for HTML files to ensure updates are visible
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 if __name__ == '__main__':
     # Initialize database
