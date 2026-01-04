@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 from database.db import init_database
@@ -11,8 +11,15 @@ from routes.history import history_bp
 
 load_dotenv()
 
-app = Flask(__name__, static_folder='../frontend', static_url_path='')
-CORS(app)
+# Determine static folder based on environment
+# In production, serve the built React app from frontend/dist
+# In development, the React dev server handles the frontend
+static_folder = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dist')
+if not os.path.exists(static_folder):
+    static_folder = os.path.join(os.path.dirname(__file__), '..', 'frontend')
+
+app = Flask(__name__, static_folder=static_folder, static_url_path='')
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configuration
 app.config['JWT_SECRET'] = os.getenv('JWT_SECRET', 'your-super-secret-jwt-key-change-this-in-production')
@@ -30,11 +37,20 @@ app.register_blueprint(history_bp, url_prefix='/api/history')
 def health_check():
     return jsonify({'status': 'ok', 'message': 'LegalConnect API is running'})
 
+# Serve static assets
+@app.route('/assets/<path:filename>')
+def serve_assets(filename):
+    return send_from_directory(os.path.join(app.static_folder, 'assets'), filename)
+
 # Serve frontend for all other routes (SPA routing)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_frontend(path):
-    response = app.send_static_file('index.html')
+    # Try to serve static file first
+    if path and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    # Otherwise serve index.html for SPA routing
+    response = send_from_directory(app.static_folder, 'index.html')
     # Disable caching for HTML files to ensure updates are visible
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response.headers['Pragma'] = 'no-cache'
